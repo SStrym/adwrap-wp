@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mysql:latest
+    env_file:
+      - .env.prod
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: bedrock
+      MYSQL_USER: bedrock
+      MYSQL_PASSWORD: bedrock
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - prod
+
+  php:
+    build:
+      context: .
+      target: phpstage
+    env_file:
+      - .env.prod
+    volumes:
+      - .:/var/www/html
+    networks:
+      - prod
+
+  nginx:
+    build:
+      context: .
+      target: nginxstage
+    env_file:
+      - .env.prod
+    depends_on:
+      - php
+    ports:
+      - "8088:80"
+    networks:
+      - prod
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - ./docker/redis.conf:/etc/redis/redis.conf:ro
+    command: redis-server /etc/redis/redis.conf
+    networks:
+      - prod
+    restart: unless-stopped
+
+volumes:
+  db_data:
+
+networks:
+  prod:
+    driver: bridge
