@@ -31,4 +31,4 @@ wp-cli.local.yml
 /keys/*
 !/keys/.gitkeep
 !/keys/README.md
-lando.env
+.lando.env
