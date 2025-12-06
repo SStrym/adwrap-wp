@@ -1,0 +1,48 @@
+name: wp-adwrap
+recipe: wordpress
+
+env_file:
+  - .env.example
+  - .lando.env
+
+excludes:
+  - vendor
+  - node_modules
+
+config:
+  php: "8.3"
+  via: nginx
+  database: mariadb:10.11
+  cache: redis
+  webroot: web
+  xdebug: false
+
+services:
+  appserver:
+    overrides:
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+  database:
+    type: mariadb:10.11
+    portforward: true
+  cache:
+    type: redis:7
+    portforward: true
+    overrides:
+      volumes:
+        - ./docker/redis.conf:/etc/redis/redis.conf:ro
+      command: redis-server /etc/redis/redis.conf
+  pma:
+    type: phpmyadmin
+    hosts:
+      - database
+
+tooling:
+  wp:
+    service: appserver
+  composer:
+    service: appserver
+  mysql:
+    service: database
+  redis-cli:
+    service: cache
