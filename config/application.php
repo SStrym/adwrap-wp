@@ -69,13 +69,15 @@ if (!env('WP_ENVIRONMENT_TYPE') && in_array(WP_ENV, ['production', 'staging', 'd
 
 Config::define('WP_REDIS_HOST', env('WP_REDIS_HOST') ?: 'cache');
 Config::define('WP_REDIS_PORT', env('WP_REDIS_PORT') ?: 6379);
-Config::define('WP_REDIS_DISABLED', false);
+Config::define('WP_REDIS_PASSWORD', env('WP_REDIS_PASSWORD') ?: null);
+Config::define('WP_REDIS_DISABLED', env('WP_REDIS_DISABLED') ?: false);
 
 Config::define('WP_REDIS_CONFIG', [
-    'token' => 'e279430effe043b8c17d3f3c751c4c0846bc70c97f0eaaea766b4079001c',
+    'token' => env('OBJECT_CACHE_PRO_TOKEN') ?: 'e279430effe043b8c17d3f3c751c4c0846bc70c97f0eaaea766b4079001c',
     'host' => env('WP_REDIS_HOST') ?: 'cache',
-    'port' => 6379,
-    'database' => 0, // change for each site
+    'port' => (int) (env('WP_REDIS_PORT') ?: 6379),
+    'password' => env('WP_REDIS_PASSWORD') ?: null,
+    'database' => 0,
     'maxttl' => 3600 * 24 * 7, // 7 days
     'timeout' => 1.0,
     'read_timeout' => 1.0,
@@ -84,8 +86,6 @@ Config::define('WP_REDIS_CONFIG', [
     'strict' => true,
     'debug' => false,
 ]);
-
-define('WP_REDIS_DISABLED', false);
 
 
 /**
