@@ -1,0 +1,135 @@
+{
+    "key": "group_success_story",
+    "title": "Success Story Fields",
+    "fields": [
+        {
+            "key": "field_success_story_client_name",
+            "label": "Client Name",
+            "name": "client_name",
+            "type": "text",
+            "required": 1
+        },
+        {
+            "key": "field_success_story_hero_image",
+            "label": "Hero Image",
+            "name": "hero_image",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "instructions": "Main vehicle/product image"
+        },
+        {
+            "key": "field_success_story_hero_background",
+            "label": "Hero Background (Desktop)",
+            "name": "hero_background",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "instructions": "Background image for desktop"
+        },
+        {
+            "key": "field_success_story_hero_background_mobile",
+            "label": "Hero Background (Mobile)",
+            "name": "hero_background_mobile",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "instructions": "Background image for mobile"
+        },
+        {
+            "key": "field_success_story_hero_label",
+            "label": "Hero Label",
+            "name": "hero_label",
+            "type": "text",
+            "default_value": "Post-Rebrand",
+            "instructions": "Label above the stats (e.g. Post-Rebrand)"
+        },
+        {
+            "key": "field_success_story_short_description",
+            "label": "Short Description",
+            "name": "short_description",
+            "type": "wysiwyg",
+            "tabs": "all",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "instructions": "Brief description for card view"
+        },
+        {
+            "key": "field_success_story_content",
+            "label": "Content",
+            "name": "content",
+            "type": "wysiwyg",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1
+        },
+        {
+            "key": "field_success_story_stats",
+            "label": "Statistics",
+            "name": "stats",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Add Stat",
+            "sub_fields": [
+                {
+                    "key": "field_success_story_stat_value",
+                    "label": "Value",
+                    "name": "value",
+                    "type": "text",
+                    "instructions": "e.g. $3,850 or 20%"
+                },
+                {
+                    "key": "field_success_story_stat_label",
+                    "label": "Label",
+                    "name": "label",
+                    "type": "text",
+                    "instructions": "e.g. Revenue Increase"
+                }
+            ]
+        },
+        {
+            "key": "field_success_story_gallery",
+            "label": "Gallery",
+            "name": "gallery",
+            "type": "gallery",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all"
+        },
+        {
+            "key": "field_success_story_result_percent",
+            "label": "Result Percentage",
+            "name": "result_percent",
+            "type": "text",
+            "instructions": "e.g. 38%"
+        },
+        {
+            "key": "field_success_story_result_label",
+            "label": "Result Label",
+            "name": "result_label",
+            "type": "text",
+            "instructions": "e.g. INCREASE IN REVENUE"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "success_story"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": ["the_content"],
+    "active": true,
+    "show_in_rest": true
+}
+

@@ -156,18 +156,33 @@ Config::define('WP_POST_REVISIONS', env('WP_POST_REVISIONS') ?? true);
 Config::define('CONCATENATE_SCRIPTS', false);
 
 /**
- * GCP Service Account Key File
- * Place your gcs-service-account.json file in the /keys/ directory at project root
- * You can override the filename using GCS_KEY_FILE environment variable
+ * GCP Service Account Key
+ * Option 1: Place JSON file in /keys/ directory (local dev)
+ * Option 2: Set GCS_KEY_JSON_BASE64 env variable with base64 encoded JSON (production)
  */
-$gcs_key_file = env('GCS_KEY_FILE')
-    ? $root_dir . '/keys/' . env('GCS_KEY_FILE')
-    : $root_dir . '/keys/focused-house-366710-effb131fea8e.json';
+$gcs_key_file = null;
 
-if (file_exists($gcs_key_file)) {
+// Check for base64 encoded key in env (for Railway/production)
+if (env('GCS_KEY_JSON_BASE64')) {
+    $gcs_key_content = base64_decode(env('GCS_KEY_JSON_BASE64'));
+    $gcs_key_file = '/tmp/gcs-key.json';
+    file_put_contents($gcs_key_file, $gcs_key_content);
+}
+// Fallback to file in /keys/ directory (local development)
+elseif (env('GCS_KEY_FILE')) {
+    $gcs_key_file = $root_dir . '/keys/' . env('GCS_KEY_FILE');
+}
+else {
+    $default_key = $root_dir . '/keys/focused-house-366710-effb131fea8e.json';
+    if (file_exists($default_key)) {
+        $gcs_key_file = $default_key;
+    }
+}
+
+if ($gcs_key_file && file_exists($gcs_key_file)) {
     Config::define('AS3CF_SETTINGS', serialize(array(
         'provider'      => 'gcp',
-        'bucket'        => 'adwrap',
+        'bucket'        => env('GCS_BUCKET') ?: 'adwrap',
         'key-file-path' => $gcs_key_file,
     )));
 }

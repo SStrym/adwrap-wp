@@ -1,0 +1,209 @@
+{
+    "key": "group_success_stories_page",
+    "title": "Success Stories Page",
+    "fields": [
+        {
+            "key": "field_ss_page_hero",
+            "label": "Hero Section",
+            "name": "hero",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_ss_page_hero_label",
+                    "label": "Label",
+                    "name": "label",
+                    "type": "text",
+                    "default_value": "SUCCESS STORIES"
+                },
+                {
+                    "key": "field_ss_page_hero_title_highlight",
+                    "label": "Title Highlight",
+                    "name": "title_highlight",
+                    "type": "text",
+                    "default_value": "Real Clients."
+                },
+                {
+                    "key": "field_ss_page_hero_title",
+                    "label": "Title",
+                    "name": "title",
+                    "type": "text",
+                    "default_value": "Real Stories."
+                },
+                {
+                    "key": "field_ss_page_hero_description",
+                    "label": "Description",
+                    "name": "description",
+                    "type": "wysiwyg",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0
+                },
+                {
+                    "key": "field_ss_page_hero_image",
+                    "label": "Image",
+                    "name": "image",
+                    "type": "image",
+                    "return_format": "array",
+                    "preview_size": "medium"
+                }
+            ]
+        },
+        {
+            "key": "field_ss_page_cases",
+            "label": "Cases Section",
+            "name": "cases_section",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_ss_page_cases_title_highlight",
+                    "label": "Title Highlight",
+                    "name": "title_highlight",
+                    "type": "text",
+                    "default_value": "Impact."
+                },
+                {
+                    "key": "field_ss_page_cases_title",
+                    "label": "Title",
+                    "name": "title",
+                    "type": "text",
+                    "default_value": "Design. Strategy."
+                },
+                {
+                    "key": "field_ss_page_cases_description",
+                    "label": "Description",
+                    "name": "description",
+                    "type": "wysiwyg",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0
+                }
+            ]
+        },
+        {
+            "key": "field_ss_page_results",
+            "label": "Results Section",
+            "name": "results_section",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_ss_page_results_label",
+                    "label": "Label",
+                    "name": "label",
+                    "type": "text",
+                    "default_value": "LEGENDARY STATS"
+                },
+                {
+                    "key": "field_ss_page_results_title_highlight",
+                    "label": "Title Highlight",
+                    "name": "title_highlight",
+                    "type": "text",
+                    "default_value": "That Speak for Themselves"
+                },
+                {
+                    "key": "field_ss_page_results_title",
+                    "label": "Title",
+                    "name": "title",
+                    "type": "text",
+                    "default_value": "Results"
+                },
+                {
+                    "key": "field_ss_page_results_description",
+                    "label": "Description",
+                    "name": "description",
+                    "type": "wysiwyg",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0
+                },
+                {
+                    "key": "field_ss_page_results_gallery",
+                    "label": "Gallery",
+                    "name": "gallery",
+                    "type": "gallery",
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all",
+                    "instructions": "Images for the slider"
+                }
+            ]
+        },
+        {
+            "key": "field_ss_page_cta",
+            "label": "CTA Section",
+            "name": "cta",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_ss_page_cta_title",
+                    "label": "Title",
+                    "name": "title",
+                    "type": "text",
+                    "default_value": "Ready to Level Up?"
+                },
+                {
+                    "key": "field_ss_page_cta_button_text",
+                    "label": "Button Text",
+                    "name": "button_text",
+                    "type": "text",
+                    "default_value": "GO AHEAD"
+                },
+                {
+                    "key": "field_ss_page_cta_button_link",
+                    "label": "Button Link",
+                    "name": "button_link",
+                    "type": "text",
+                    "default_value": "/contact-us"
+                },
+                {
+                    "key": "field_ss_page_cta_background",
+                    "label": "Background Image",
+                    "name": "background",
+                    "type": "image",
+                    "return_format": "array",
+                    "preview_size": "medium"
+                },
+                {
+                    "key": "field_ss_page_cta_background_mobile",
+                    "label": "Background Image (Mobile)",
+                    "name": "background_mobile",
+                    "type": "image",
+                    "return_format": "array",
+                    "preview_size": "medium"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "page",
+                "operator": "==",
+                "value": "success-stories"
+            }
+        ],
+        [
+            {
+                "param": "page_template",
+                "operator": "==",
+                "value": "default"
+            },
+            {
+                "param": "post",
+                "operator": "==",
+                "value": "success-stories"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "show_in_rest": true
+}
+

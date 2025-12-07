@@ -19,6 +19,7 @@
 .env
 .env.*
 !.env.example
+!.env.railway.example
 
 # Composer
 /vendor
@@ -31,4 +32,35 @@ wp-cli.local.yml
 /keys/*
 !/keys/.gitkeep
 !/keys/README.md
+*.pem
+*.key
+*.p12
+*.json.enc
+
+# Local development
 .lando.env
+.lando.yml
+docker-compose.override.yml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Database dumps (keep in secure location, not in repo)
+*.sql
+*.sql.gz
+!dump.sql.gz.example
+
+# Node (if any frontend assets)
+node_modules/
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+/tmp/
+*.tmp

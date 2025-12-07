@@ -1,0 +1,1418 @@
+{
+    "key": "group_service_fields",
+    "title": "Service Fields",
+    "fields": [
+        {
+            "key": "field_service_hero",
+            "label": "Hero Section",
+            "name": "hero",
+            "aria-label": "",
+            "type": "group",
+            "instructions": "Hero section displayed at the top of the service page",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_hero_image",
+                    "label": "Hero Image",
+                    "name": "hero_image",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Main hero background image (recommended: 1440x600px)",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all",
+                    "mime_types": "jpg, jpeg, png, webp",
+                    "min_width": 0,
+                    "min_height": 0,
+                    "min_size": 0,
+                    "max_width": 0,
+                    "max_height": 0,
+                    "max_size": 0
+                },
+                {
+                    "key": "field_hero_subtitle",
+                    "label": "Subtitle",
+                    "name": "hero_subtitle",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "Small text above the main title (e.g., \"VEHICLE WRAPS\")",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "maxlength": 100,
+                    "default_value": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_hero_title_highlight",
+                    "label": "Title (Highlighted)",
+                    "name": "hero_title_highlight",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "First part of title in teal color (e.g., \"Elevate Your Image With\")",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_hero_title",
+                    "label": "Title (Regular)",
+                    "name": "hero_title",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "Second part of title in dark color (e.g., \"Branded Workwear\")",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_hero_description",
+                    "label": "Description",
+                    "name": "hero_description",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "Hero description text",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "rows": 4,
+                    "new_lines": "br",
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": ""
+                }
+            ]
+        },
+        {
+            "key": "field_service_card",
+            "label": "Card Info",
+            "name": "card",
+            "aria-label": "",
+            "type": "group",
+            "instructions": "Information displayed on the services listing page",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_card_image",
+                    "label": "Card Image",
+                    "name": "card_image",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Image for the service card (recommended: 380x346px)",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all",
+                    "mime_types": "jpg, jpeg, png, webp",
+                    "min_width": 0,
+                    "min_height": 0,
+                    "min_size": 0,
+                    "max_width": 0,
+                    "max_height": 0,
+                    "max_size": 0
+                },
+                {
+                    "key": "field_card_description",
+                    "label": "Card Description",
+                    "name": "card_description",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "Short description for the service card",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "rows": 3,
+                    "maxlength": 200,
+                    "default_value": "",
+                    "new_lines": "",
+                    "placeholder": ""
+                }
+            ]
+        },
+        {
+            "key": "field_service_benefits",
+            "label": "Benefits Section",
+            "name": "benefits",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "Add up to 3 benefit items with icons",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "pagination": 0,
+            "min": 0,
+            "max": 6,
+            "collapsed": "",
+            "button_label": "Add Benefit",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_benefit_icon",
+                    "label": "Icon",
+                    "name": "icon",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Benefit icon (recommended: 90x90px, SVG or PNG)",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "preview_size": "thumbnail",
+                    "library": "all",
+                    "mime_types": "svg, png, jpg, jpeg, webp",
+                    "min_width": 0,
+                    "min_height": 0,
+                    "min_size": 0,
+                    "max_width": 0,
+                    "max_height": 0,
+                    "max_size": 0,
+                    "parent_repeater": "field_service_benefits"
+                },
+                {
+                    "key": "field_benefit_description",
+                    "label": "Description",
+                    "name": "description",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "Benefit description text",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "rows": 3,
+                    "default_value": "",
+                    "new_lines": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "parent_repeater": "field_service_benefits"
+                }
+            ]
+        },
+        {
+            "key": "field_service_content_sections",
+            "label": "Content Sections",
+            "name": "content_sections",
+            "aria-label": "",
+            "type": "flexible_content",
+            "instructions": "Add content blocks for the service page",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "button_label": "Add Section",
+            "layouts": [
+                {
+                    "key": "layout_text_image_block",
+                    "name": "text_image_block",
+                    "label": "Text + Image Block",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_tib_label",
+                            "label": "Section Label",
+                            "name": "label",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Small label above title (e.g., \"VAN WRAPS\")",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "maxlength": 50,
+                            "default_value": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_tib_title_highlight",
+                            "label": "Title (Highlighted)",
+                            "name": "title_highlight",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "First part of title in teal color (e.g., \"We Build\")",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_tib_title",
+                            "label": "Title (Regular)",
+                            "name": "title",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Second part of title in dark color (e.g., \"Brands That Move People.\")",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_tib_subtitle",
+                            "label": "Subtitle",
+                            "name": "subtitle",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Subtitle below the main title",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_tib_description",
+                            "label": "Description",
+                            "name": "description",
+                            "aria-label": "",
+                            "type": "wysiwyg",
+                            "instructions": "Section content",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "tabs": "all",
+                            "toolbar": "basic",
+                            "media_upload": 0,
+                            "default_value": "",
+                            "delay": 0
+                        },
+                        {
+                            "key": "field_tib_image",
+                            "label": "Image",
+                            "name": "image",
+                            "aria-label": "",
+                            "type": "image",
+                            "instructions": "Section image (recommended: 550x662px)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all",
+                            "min_width": 0,
+                            "min_height": 0,
+                            "min_size": 0,
+                            "max_width": 0,
+                            "max_height": 0,
+                            "max_size": 0,
+                            "mime_types": ""
+                        },
+                        {
+                            "key": "field_tib_image_position",
+                            "label": "Image Position",
+                            "name": "image_position",
+                            "aria-label": "",
+                            "type": "select",
+                            "instructions": "Where to place the image",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "choices": {
+                                "left": "Left",
+                                "right": "Right"
+                            },
+                            "default_value": "right",
+                            "return_format": "value",
+                            "multiple": 0,
+                            "allow_null": 0,
+                            "ui": 0,
+                            "ajax": 0,
+                            "placeholder": "",
+                            "create_options": 0,
+                            "save_options": 0
+                        },
+                        {
+                            "key": "field_tib_background_color",
+                            "label": "Background Color",
+                            "name": "background_color",
+                            "aria-label": "",
+                            "type": "select",
+                            "instructions": "Section background color",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "choices": {
+                                "white": "White",
+                                "gray": "Gray"
+                            },
+                            "default_value": "white",
+                            "return_format": "value",
+                            "multiple": 0,
+                            "allow_null": 0,
+                            "ui": 0,
+                            "ajax": 0,
+                            "placeholder": "",
+                            "create_options": 0,
+                            "save_options": 0
+                        },
+                        {
+                            "key": "field_tib_button_text",
+                            "label": "Button Text",
+                            "name": "button_text",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "CTA button text (leave empty to hide button)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "GET A FREE QUOTE",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_tib_button_link",
+                            "label": "Button Link",
+                            "name": "button_link",
+                            "aria-label": "",
+                            "type": "url",
+                            "instructions": "CTA button URL",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "placeholder": ""
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_sub_services",
+                    "name": "sub_services",
+                    "label": "Sub-Services Grid",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_ss_title",
+                            "label": "Section Title",
+                            "name": "section_title",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Title for this section",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_ss_items",
+                            "label": "Items",
+                            "name": "items",
+                            "aria-label": "",
+                            "type": "repeater",
+                            "instructions": "Add sub-service items (recommended: 6 items)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "min": 0,
+                            "max": 12,
+                            "layout": "table",
+                            "button_label": "Add Item",
+                            "rows_per_page": 20,
+                            "collapsed": "",
+                            "sub_fields": [
+                                {
+                                    "key": "field_ss_item_icon",
+                                    "label": "Icon",
+                                    "name": "icon",
+                                    "aria-label": "",
+                                    "type": "image",
+                                    "instructions": "",
+                                    "required": 0,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "return_format": "array",
+                                    "preview_size": "thumbnail",
+                                    "library": "all",
+                                    "min_width": 0,
+                                    "min_height": 0,
+                                    "min_size": 0,
+                                    "max_width": 0,
+                                    "max_height": 0,
+                                    "max_size": 0,
+                                    "mime_types": "",
+                                    "parent_repeater": "field_ss_items"
+                                },
+                                {
+                                    "key": "field_ss_item_title",
+                                    "label": "Title",
+                                    "name": "title",
+                                    "aria-label": "",
+                                    "type": "text",
+                                    "instructions": "",
+                                    "required": 0,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "default_value": "",
+                                    "maxlength": "",
+                                    "placeholder": "",
+                                    "prepend": "",
+                                    "append": "",
+                                    "parent_repeater": "field_ss_items"
+                                },
+                                {
+                                    "key": "field_ss_item_link",
+                                    "label": "Link",
+                                    "name": "link",
+                                    "aria-label": "",
+                                    "type": "url",
+                                    "instructions": "",
+                                    "required": 0,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "default_value": "",
+                                    "placeholder": "",
+                                    "parent_repeater": "field_ss_items"
+                                }
+                            ]
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_features_grid",
+                    "name": "features_grid",
+                    "label": "Features Grid",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_fg_title_highlight",
+                            "label": "Title (Highlighted)",
+                            "name": "section_title_highlight",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "First part of title in teal color",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_fg_title",
+                            "label": "Title (Regular)",
+                            "name": "section_title",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Second part of title in dark\/white color",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_fg_subtitle",
+                            "label": "Subtitle",
+                            "name": "subtitle",
+                            "aria-label": "",
+                            "type": "textarea",
+                            "instructions": "Description below the title",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "rows": 2,
+                            "default_value": "",
+                            "new_lines": "",
+                            "maxlength": "",
+                            "placeholder": ""
+                        },
+                        {
+                            "key": "field_fg_background_color",
+                            "label": "Background Color",
+                            "name": "background_color",
+                            "aria-label": "",
+                            "type": "select",
+                            "instructions": "",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "choices": {
+                                "white": "White",
+                                "gray": "Gray",
+                                "dark": "Dark"
+                            },
+                            "default_value": "gray",
+                            "return_format": "value",
+                            "multiple": 0,
+                            "allow_null": 0,
+                            "ui": 0,
+                            "ajax": 0,
+                            "placeholder": "",
+                            "create_options": 0,
+                            "save_options": 0
+                        },
+                        {
+                            "key": "field_fg_items",
+                            "label": "Features",
+                            "name": "items",
+                            "aria-label": "",
+                            "type": "repeater",
+                            "instructions": "Add feature items (recommended: 3 items)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "min": 0,
+                            "max": 6,
+                            "layout": "block",
+                            "button_label": "Add Feature",
+                            "rows_per_page": 20,
+                            "collapsed": "",
+                            "sub_fields": [
+                                {
+                                    "key": "field_fg_item_icon",
+                                    "label": "Icon",
+                                    "name": "icon",
+                                    "aria-label": "",
+                                    "type": "image",
+                                    "instructions": "",
+                                    "required": 0,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "return_format": "array",
+                                    "preview_size": "thumbnail",
+                                    "library": "all",
+                                    "min_width": 0,
+                                    "min_height": 0,
+                                    "min_size": 0,
+                                    "max_width": 0,
+                                    "max_height": 0,
+                                    "max_size": 0,
+                                    "mime_types": "",
+                                    "parent_repeater": "field_fg_items"
+                                },
+                                {
+                                    "key": "field_fg_item_description",
+                                    "label": "Description",
+                                    "name": "description",
+                                    "aria-label": "",
+                                    "type": "textarea",
+                                    "instructions": "",
+                                    "required": 0,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "rows": 3,
+                                    "default_value": "",
+                                    "new_lines": "",
+                                    "maxlength": "",
+                                    "placeholder": "",
+                                    "parent_repeater": "field_fg_items"
+                                }
+                            ]
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_centered_section",
+                    "name": "centered_section",
+                    "label": "Centered Section Header",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_cs_title",
+                            "label": "Title",
+                            "name": "title",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Main centered title",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_cs_description",
+                            "label": "Description",
+                            "name": "description",
+                            "aria-label": "",
+                            "type": "textarea",
+                            "instructions": "Centered description text below title",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "rows": 4,
+                            "default_value": "",
+                            "new_lines": "",
+                            "maxlength": "",
+                            "placeholder": ""
+                        },
+                        {
+                            "key": "field_cs_background_color",
+                            "label": "Background Color",
+                            "name": "background_color",
+                            "aria-label": "",
+                            "type": "select",
+                            "instructions": "",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "choices": {
+                                "white": "White",
+                                "gray": "Gray"
+                            },
+                            "default_value": "gray",
+                            "return_format": "value",
+                            "multiple": 0,
+                            "allow_null": 0,
+                            "ui": 0,
+                            "ajax": 0,
+                            "placeholder": "",
+                            "create_options": 0,
+                            "save_options": 0
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_featured_text_image",
+                    "name": "featured_text_image",
+                    "label": "Featured Text + Image (with border)",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_fti_label",
+                            "label": "Label",
+                            "name": "label",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Small label above the title (e.g. VAN WRAPS)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_fti_title",
+                            "label": "Title",
+                            "name": "title",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Main title text (regular color)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_6934866be294e",
+                            "label": "Subtitle",
+                            "name": "subtitle",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Main title text (regular color)",
+                            "required": 0,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "allow_in_bindings": 1,
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_fti_title_highlight",
+                            "label": "Title Highlight",
+                            "name": "title_highlight",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Highlighted part of title (teal color)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_fti_description",
+                            "label": "Description",
+                            "name": "description",
+                            "aria-label": "",
+                            "type": "wysiwyg",
+                            "instructions": "Description text below the title",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "tabs": "all",
+                            "toolbar": "basic",
+                            "media_upload": 0,
+                            "default_value": "",
+                            "delay": 0
+                        },
+                        {
+                            "key": "field_fti_image",
+                            "label": "Image",
+                            "name": "image",
+                            "aria-label": "",
+                            "type": "image",
+                            "instructions": "Image with border offset effect",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all",
+                            "min_width": 0,
+                            "min_height": 0,
+                            "min_size": 0,
+                            "max_width": 0,
+                            "max_height": 0,
+                            "max_size": 0,
+                            "mime_types": ""
+                        },
+                        {
+                            "key": "field_fti_image_position",
+                            "label": "Image Position",
+                            "name": "image_position",
+                            "aria-label": "",
+                            "type": "select",
+                            "instructions": "Where to place the image",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "choices": {
+                                "left": "Left",
+                                "right": "Right"
+                            },
+                            "default_value": "right",
+                            "return_format": "value",
+                            "multiple": 0,
+                            "allow_null": 0,
+                            "ui": 0,
+                            "ajax": 0,
+                            "placeholder": "",
+                            "create_options": 0,
+                            "save_options": 0
+                        },
+                        {
+                            "key": "field_fti_background_color",
+                            "label": "Background Color",
+                            "name": "background_color",
+                            "aria-label": "",
+                            "type": "select",
+                            "instructions": "Section background color",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "choices": {
+                                "white": "White",
+                                "gray": "Gray"
+                            },
+                            "default_value": "gray",
+                            "return_format": "value",
+                            "multiple": 0,
+                            "allow_null": 0,
+                            "ui": 0,
+                            "ajax": 0,
+                            "placeholder": "",
+                            "create_options": 0,
+                            "save_options": 0
+                        },
+                        {
+                            "key": "field_fti_button_text",
+                            "label": "Button Text",
+                            "name": "button_text",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "CTA button text (leave empty to hide button)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "GET A FREE QUOTE",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_fti_button_link",
+                            "label": "Button Link",
+                            "name": "button_link",
+                            "aria-label": "",
+                            "type": "url",
+                            "instructions": "CTA button URL",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "50",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "placeholder": ""
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_faq_accordion",
+                    "name": "faq_accordion",
+                    "label": "FAQ Accordion",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_faq_title",
+                            "label": "Section Title",
+                            "name": "section_title",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Optional title above the FAQ (e.g. What's Included in Your Package)",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": ""
+                        },
+                        {
+                            "key": "field_faq_description",
+                            "label": "Section Description",
+                            "name": "section_description",
+                            "aria-label": "",
+                            "type": "textarea",
+                            "instructions": "Optional description below the title",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "rows": 3,
+                            "default_value": "",
+                            "new_lines": "",
+                            "maxlength": "",
+                            "placeholder": ""
+                        },
+                        {
+                            "key": "field_faq_items",
+                            "label": "FAQ Items",
+                            "name": "items",
+                            "aria-label": "",
+                            "type": "repeater",
+                            "instructions": "Add FAQ questions and answers",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "min": 0,
+                            "max": 20,
+                            "layout": "block",
+                            "button_label": "Add FAQ Item",
+                            "rows_per_page": 20,
+                            "collapsed": "",
+                            "sub_fields": [
+                                {
+                                    "key": "field_faq_item_question",
+                                    "label": "Question",
+                                    "name": "question",
+                                    "aria-label": "",
+                                    "type": "text",
+                                    "instructions": "",
+                                    "required": 1,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "default_value": "",
+                                    "maxlength": "",
+                                    "placeholder": "",
+                                    "prepend": "",
+                                    "append": "",
+                                    "parent_repeater": "field_faq_items"
+                                },
+                                {
+                                    "key": "field_faq_item_answer",
+                                    "label": "Answer",
+                                    "name": "answer",
+                                    "aria-label": "",
+                                    "type": "wysiwyg",
+                                    "instructions": "Use bold text for labels (e.g. <strong>Concepts.<\/strong>)",
+                                    "required": 1,
+                                    "conditional_logic": false,
+                                    "wrapper": {
+                                        "width": "",
+                                        "class": "",
+                                        "id": ""
+                                    },
+                                    "tabs": "all",
+                                    "toolbar": "basic",
+                                    "media_upload": 0,
+                                    "delay": 0,
+                                    "default_value": "",
+                                    "parent_repeater": "field_faq_items"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "field_faq_image",
+                            "label": "Image",
+                            "name": "image",
+                            "aria-label": "",
+                            "type": "image",
+                            "instructions": "Image displayed on the right side of the FAQ",
+                            "required": 0,
+                            "conditional_logic": false,
+                            "wrapper": {
+                                "width": "",
+                                "class": "",
+                                "id": ""
+                            },
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all",
+                            "min_width": 0,
+                            "min_height": 0,
+                            "min_size": 0,
+                            "max_width": 0,
+                            "max_height": 0,
+                            "max_size": 0,
+                            "mime_types": ""
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                }
+            ],
+            "min": "",
+            "max": ""
+        },
+        {
+            "key": "field_service_gallery",
+            "label": "Gallery",
+            "name": "gallery",
+            "aria-label": "",
+            "type": "gallery",
+            "instructions": "Add images for the gallery\/slider section",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "mime_types": "jpg, jpeg, png, webp",
+            "insert": "append",
+            "min": 0,
+            "max": 0,
+            "min_width": 0,
+            "min_height": 0,
+            "min_size": 0,
+            "max_width": 0,
+            "max_height": 0,
+            "max_size": 0
+        },
+        {
+            "key": "field_service_cta",
+            "label": "CTA Section",
+            "name": "cta",
+            "aria-label": "",
+            "type": "group",
+            "instructions": "Call-to-action section at the bottom of the page",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_cta_title",
+                    "label": "Title",
+                    "name": "title",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "CTA section title",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "Ready to Transform Your Business Look?",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_cta_button_text",
+                    "label": "Button Text",
+                    "name": "button_text",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "CTA button text",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "GO AHEAD",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_cta_button_link",
+                    "label": "Button Link",
+                    "name": "button_link",
+                    "aria-label": "",
+                    "type": "url",
+                    "instructions": "CTA button URL",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_cta_background",
+                    "label": "Background Image",
+                    "name": "background",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Desktop background image for CTA section",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all",
+                    "mime_types": "jpg, jpeg, png, webp",
+                    "min_width": 0,
+                    "min_height": 0,
+                    "min_size": 0,
+                    "max_width": 0,
+                    "max_height": 0,
+                    "max_size": 0
+                },
+                {
+                    "key": "field_cta_background_mobile",
+                    "label": "Background Image (Mobile)",
+                    "name": "background_mobile",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Mobile background image for CTA section",
+                    "required": 0,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all",
+                    "mime_types": "jpg, jpeg, png, webp",
+                    "min_width": 0,
+                    "min_height": 0,
+                    "min_size": 0,
+                    "max_width": 0,
+                    "max_height": 0,
+                    "max_size": 0
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "service"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Fields for the Service custom post type",
+    "show_in_rest": 1,
+    "display_title": "",
+    "modified": 1765051853
+}

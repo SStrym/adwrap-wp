@@ -1,0 +1,68 @@
+{
+    "key": "group_blog_post",
+    "title": "Blog Post Fields",
+    "fields": [
+        {
+            "key": "field_blog_post_content",
+            "label": "Content",
+            "name": "content",
+            "aria-label": "",
+            "type": "wysiwyg",
+            "instructions": "Main content of the blog post",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0,
+            "default_value": ""
+        },
+        {
+            "key": "field_blog_post_read_time",
+            "label": "Read Time",
+            "name": "read_time",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Estimated reading time (e.g. '4 min read')",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placeholder": "4 min read",
+            "default_value": "",
+            "maxlength": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "post"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": [
+        "the_content"
+    ],
+    "active": true,
+    "description": "Custom fields for blog posts",
+    "show_in_rest": 1,
+    "display_title": "",
+    "modified": 1765109034
+}
