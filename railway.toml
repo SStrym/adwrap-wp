@@ -7,3 +7,16 @@ healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 
+# Persistent storage for WordPress files
+[[mounts]]
+mountPath = "/var/www/html/web/app/uploads"
+name = "wp-uploads"
+
+[[mounts]]
+mountPath = "/var/www/html/web/app/plugins"
+name = "wp-plugins"
+
+[[mounts]]
+mountPath = "/var/www/html/web/app/themes"
+name = "wp-themes"
+

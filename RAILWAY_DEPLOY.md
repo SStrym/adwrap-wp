@@ -64,10 +64,37 @@ INTERNAL_API_SECRET=generate-a-secure-random-string
 # Disable WP Cron (recommended for Railway)
 DISABLE_WP_CRON=true
 
+# Allow plugin/theme updates from admin (requires volumes)
+ALLOW_FILE_MODS=true
+
 # Google Cloud Storage for media uploads
 GCS_KEY_JSON_BASE64=<base64-encoded-service-account-json>
 GCS_BUCKET=adwrap
 ```
+
+## Persistent Volumes
+
+The deployment uses Railway Volumes for persistent storage:
+
+| Volume | Mount Path | Purpose |
+|--------|-----------|---------|
+| `wp-uploads` | `/var/www/html/web/app/uploads` | Media uploads |
+| `wp-plugins` | `/var/www/html/web/app/plugins` | WordPress plugins |
+| `wp-themes` | `/var/www/html/web/app/themes` | WordPress themes |
+
+### Enable Plugin/Theme Updates from Admin
+
+1. Set environment variable: `ALLOW_FILE_MODS=true`
+2. Volumes are automatically configured in `railway.toml`
+3. On first deploy, existing plugins/themes are copied to volumes
+4. After that, you can install/update plugins from WordPress admin
+
+### Notes on Volumes
+
+- **mu-plugins** stay in the Docker image (managed via git)
+- Volumes persist across deploys
+- First deploy initializes volumes from git content
+- Subsequent updates via admin are preserved
 
 ## GCP Service Account Setup (for media uploads)
 
