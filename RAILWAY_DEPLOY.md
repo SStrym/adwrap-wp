@@ -72,29 +72,28 @@ GCS_KEY_JSON_BASE64=<base64-encoded-service-account-json>
 GCS_BUCKET=adwrap
 ```
 
-## Persistent Volumes
+## Persistent Volume
 
-The deployment uses Railway Volumes for persistent storage:
+Create one volume in Railway Dashboard (Settings → Volumes → + New Volume):
 
-| Volume | Mount Path | Purpose |
-|--------|-----------|---------|
-| `wp-uploads` | `/var/www/html/web/app/uploads` | Media uploads |
-| `wp-plugins` | `/var/www/html/web/app/plugins` | WordPress plugins |
-| `wp-themes` | `/var/www/html/web/app/themes` | WordPress themes |
+| Volume Name | Mount Path | Purpose |
+|-------------|-----------|---------|
+| `wp-app` | `/var/www/html/web/app` | All WordPress app files (plugins, themes, uploads, mu-plugins) |
 
 ### Enable Plugin/Theme Updates from Admin
 
-1. Set environment variable: `ALLOW_FILE_MODS=true`
-2. Volumes are automatically configured in `railway.toml`
-3. On first deploy, existing plugins/themes are copied to volumes
-4. After that, you can install/update plugins from WordPress admin
+1. Create the volume above in Railway Dashboard
+2. Set environment variable: `ALLOW_FILE_MODS=true`
+3. Redeploy the service
+4. On first start, app folder is copied to volume
+5. After that, you can install/update plugins from WordPress admin
 
-### Notes on Volumes
+### Notes on Volume
 
-- **mu-plugins** stay in the Docker image (managed via git)
-- Volumes persist across deploys
-- First deploy initializes volumes from git content
-- Subsequent updates via admin are preserved
+- Volume persists across deploys
+- First deploy initializes volume from git content
+- Subsequent updates (plugins, themes, uploads) are preserved
+- mu-plugins also persist in the volume
 
 ## GCP Service Account Setup (for media uploads)
 
