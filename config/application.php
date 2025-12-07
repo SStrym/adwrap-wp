@@ -85,6 +85,7 @@ Config::define('WP_REDIS_CONFIG', [
     'split_alloptions' => true,
     'strict' => true,
     'debug' => false,
+    'non_prefetchable_groups' => ['as3cf', 'as3cf_item'],
 ]);
 
 
