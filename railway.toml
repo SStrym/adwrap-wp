@@ -7,6 +7,11 @@ healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 
+# Railway will proxy 80/443 to this port
+# Nginx listens on $PORT which defaults to 8080
+[variables]
+PORT = "8080"
+
 # Persistent storage for WordPress files
 [[mounts]]
 mountPath = "/var/www/html/web/app/uploads"
