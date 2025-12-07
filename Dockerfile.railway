@@ -65,6 +65,15 @@ RUN mkdir -p /var/log/supervisor \
     && mkdir -p /run/nginx \
     && mkdir -p /var/www/html/web/app/uploads
 
+# Backup plugins and themes for volume initialization
+# These will be copied to volumes on first run if volumes are empty
+RUN if [ -d "/var/www/html/web/app/plugins" ]; then \
+        cp -r /var/www/html/web/app/plugins /var/www/html/web/app/plugins-build; \
+    fi \
+    && if [ -d "/var/www/html/web/app/themes" ]; then \
+        cp -r /var/www/html/web/app/themes /var/www/html/web/app/themes-build; \
+    fi
+
 # Copy configuration files
 COPY docker/railway/nginx.conf /etc/nginx/nginx.conf
 COPY docker/railway/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
