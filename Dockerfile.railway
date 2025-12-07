@@ -17,6 +17,7 @@ RUN apk add --no-cache \
     oniguruma-dev \
     mysql-client \
     curl \
+    $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo \
@@ -28,6 +29,8 @@ RUN apk add --no-cache \
         mbstring \
         opcache \
         bcmath \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && rm -rf /var/cache/apk/*
 
 # Install Composer
