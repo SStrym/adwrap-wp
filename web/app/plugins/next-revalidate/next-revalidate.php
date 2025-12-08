@@ -70,6 +70,12 @@ class Next_Revalidation {
         add_action('update_option_contact_facebook', array($this, 'on_contacts_change'), 10, 2);
         add_action('update_option_contact_instagram', array($this, 'on_contacts_change'), 10, 2);
         add_action('update_option_contact_pinterest', array($this, 'on_contacts_change'), 10, 2);
+        
+        // Scripts & Analytics changes
+        add_action('update_option_gtm_id', array($this, 'on_scripts_change'), 10, 2);
+        add_action('update_option_head_scripts', array($this, 'on_scripts_change'), 10, 2);
+        add_action('update_option_body_start_scripts', array($this, 'on_scripts_change'), 10, 2);
+        add_action('update_option_body_end_scripts', array($this, 'on_scripts_change'), 10, 2);
     }
 
     public function init() {
@@ -435,6 +441,14 @@ class Next_Revalidation {
         if ($old_value !== $value) {
             error_log("Next.js Revalidation: Contact information changed");
             $this->send_revalidation_request('contacts');
+        }
+    }
+    
+    public function on_scripts_change($old_value, $value) {
+        // Only revalidate if the value actually changed
+        if ($old_value !== $value) {
+            error_log("Next.js Revalidation: Scripts settings changed");
+            $this->send_revalidation_request('scripts');
         }
     }
     
