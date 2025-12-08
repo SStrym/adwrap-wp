@@ -39,7 +39,7 @@ else
     echo "Plugins folder exists with content, skipping full initialization"
 fi
 
-# Always sync mu-plugins and themes from build (code, not data)
+# Always sync mu-plugins, themes, and plugins from build (code, not data)
 if [ -d "$APP_BUILD/mu-plugins" ]; then
     echo "Syncing mu-plugins from build..."
     cp -r "$APP_BUILD/mu-plugins"/* "$APP_DIR/mu-plugins"/ 2>/dev/null || true
@@ -50,6 +50,12 @@ if [ -d "$APP_BUILD/themes" ]; then
     echo "Syncing themes from build..."
     cp -r "$APP_BUILD/themes"/* "$APP_DIR/themes"/ 2>/dev/null || true
     echo "themes synced"
+fi
+
+if [ -d "$APP_BUILD/plugins" ]; then
+    echo "Syncing plugins from build..."
+    cp -r "$APP_BUILD/plugins"/* "$APP_DIR/plugins"/ 2>/dev/null || true
+    echo "plugins synced"
 fi
 
 # Set permissions
