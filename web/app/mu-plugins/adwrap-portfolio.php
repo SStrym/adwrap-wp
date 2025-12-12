@@ -66,27 +66,6 @@ final class AdwrapPortfolio
      */
     public function register_taxonomies(): void
     {
-        // Capability taxonomy
-        register_taxonomy('portfolio_capability', 'portfolio', [
-            'labels' => [
-                'name'          => 'Capabilities',
-                'singular_name' => 'Capability',
-                'search_items'  => 'Search Capabilities',
-                'all_items'     => 'All Capabilities',
-                'edit_item'     => 'Edit Capability',
-                'update_item'   => 'Update Capability',
-                'add_new_item'  => 'Add New Capability',
-                'new_item_name' => 'New Capability Name',
-                'menu_name'     => 'Capabilities',
-            ],
-            'hierarchical'      => false,
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'query_var'         => true,
-            'rewrite'           => ['slug' => 'capability'],
-            'show_in_rest'      => true,
-        ]);
-
         // Industry taxonomy
         register_taxonomy('portfolio_industry', 'portfolio', [
             'labels' => [
@@ -120,10 +99,6 @@ final class AdwrapPortfolio
             'callback'            => [$this, 'get_portfolio_items'],
             'permission_callback' => '__return_true',
             'args'                => [
-                'capability' => [
-                    'required' => false,
-                    'type'     => 'string',
-                ],
                 'industry' => [
                     'required' => false,
                     'type'     => 'string',
@@ -159,7 +134,7 @@ final class AdwrapPortfolio
             ],
         ]);
 
-        // GET taxonomies (capabilities and industries)
+        // GET taxonomies (industries)
         register_rest_route('adwrap/v1', '/portfolio-taxonomies', [
             'methods'             => 'GET',
             'callback'            => [$this, 'get_taxonomies'],
@@ -176,7 +151,6 @@ final class AdwrapPortfolio
     {
         $page = (int) $request->get_param('page');
         $per_page = (int) $request->get_param('per_page');
-        $capability = $request->get_param('capability');
         $industry = $request->get_param('industry');
         $search = $request->get_param('search');
 
@@ -191,15 +165,6 @@ final class AdwrapPortfolio
 
         // Add taxonomy filters
         $tax_query = [];
-
-        if (!empty($capability)) {
-            $capabilities = array_map('trim', explode(',', $capability));
-            $tax_query[] = [
-                'taxonomy' => 'portfolio_capability',
-                'field'    => 'slug',
-                'terms'    => $capabilities,
-            ];
-        }
 
         if (!empty($industry)) {
             $industries = array_map('trim', explode(',', $industry));
@@ -279,10 +244,6 @@ final class AdwrapPortfolio
     public function get_taxonomies(): array
     {
         return [
-            'capabilities' => $this->format_terms(get_terms([
-                'taxonomy'   => 'portfolio_capability',
-                'hide_empty' => true,
-            ])),
             'industries' => $this->format_terms(get_terms([
                 'taxonomy'   => 'portfolio_industry',
                 'hide_empty' => true,
@@ -397,7 +358,6 @@ final class AdwrapPortfolio
     private function format_portfolio_card(WP_Post $post): array
     {
         $thumbnail_id = get_post_thumbnail_id($post->ID);
-        $capabilities = wp_get_post_terms($post->ID, 'portfolio_capability', ['fields' => 'all']);
         $industries = wp_get_post_terms($post->ID, 'portfolio_industry', ['fields' => 'all']);
 
         return [
@@ -406,7 +366,6 @@ final class AdwrapPortfolio
             'slug'         => $post->post_name,
             'excerpt'      => $post->post_excerpt,
             'image'        => $this->format_image((int) $thumbnail_id),
-            'capabilities' => $this->format_terms($capabilities),
             'industries'   => $this->format_terms($industries),
             'date'         => $post->post_date,
         ];
@@ -420,7 +379,6 @@ final class AdwrapPortfolio
     private function format_portfolio_full(WP_Post $post): array
     {
         $thumbnail_id = get_post_thumbnail_id($post->ID);
-        $capabilities = wp_get_post_terms($post->ID, 'portfolio_capability', ['fields' => 'all']);
         $industries = wp_get_post_terms($post->ID, 'portfolio_industry', ['fields' => 'all']);
         
         // Get gallery images
@@ -445,7 +403,6 @@ final class AdwrapPortfolio
             'content'      => apply_filters('the_content', $post->post_content),
             'image'        => $this->format_image((int) $thumbnail_id),
             'gallery'      => $formatted_gallery,
-            'capabilities' => $this->format_terms($capabilities),
             'industries'   => $this->format_terms($industries),
             'client_name'  => get_field('client_name', $post->ID) ?: '',
             'date'         => $post->post_date,

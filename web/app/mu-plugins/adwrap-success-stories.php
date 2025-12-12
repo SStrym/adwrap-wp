@@ -126,6 +126,22 @@ function format_success_story_card($post) {
         ];
     }
 
+    // Get first 2 gallery images
+    $gallery = get_field('gallery', $post->ID) ?: [];
+    $gallery_images = [];
+    if (!empty($gallery)) {
+        foreach (array_slice($gallery, 0, 2) as $img) {
+            $gallery_images[] = [
+                'id' => $img['ID'],
+                'url' => $img['url'],
+                'alt' => $img['alt'],
+                'width' => $img['width'],
+                'height' => $img['height'],
+                'sizes' => $img['sizes'] ?? null,
+            ];
+        }
+    }
+
     return [
         'id' => $post->ID,
         'title' => get_the_title($post->ID),
@@ -138,6 +154,7 @@ function format_success_story_card($post) {
         'hero_label' => get_field('hero_label', $post->ID) ?: 'Post-Rebrand',
         'result_percent' => get_field('result_percent', $post->ID) ?: '',
         'result_label' => get_field('result_label', $post->ID) ?: '',
+        'gallery_preview' => $gallery_images,
     ];
 }
 

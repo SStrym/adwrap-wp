@@ -90,6 +90,7 @@ class AdwrapContactAPI {
             'email'       => 'Email',
             'phone'       => 'Phone',
             'service'     => 'Service',
+            'form_type'   => 'Type',
             'source'      => 'Source',
             'taxonomy-lead_status' => 'Status',
             'date'        => 'Date',
@@ -112,6 +113,11 @@ class AdwrapContactAPI {
                 break;
             case 'service':
                 echo esc_html(get_post_meta($post_id, '_lead_service', true));
+                break;
+            case 'form_type':
+                $form_type = get_post_meta($post_id, '_lead_form_type', true) ?: 'contact';
+                $badge_color = $form_type === 'quote' ? '#00ABB3' : '#2271b1';
+                echo '<span style="background: ' . $badge_color . '; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase;">' . esc_html($form_type) . '</span>';
                 break;
             case 'source':
                 echo esc_html(get_post_meta($post_id, '_lead_source', true));
@@ -228,9 +234,20 @@ class AdwrapContactAPI {
     /**
      * Save lead to database
      */
-    private function save_lead(array $data, bool $is_spam = false): int {
+    private function save_lead(array $data, string $form_type = 'contact', bool $is_spam = false): int {
+        // Handle name field based on form type
+        if ($form_type === 'quote') {
+            $full_name = $data['full_name'] ?? '';
+            $name_parts = explode(' ', $full_name, 2);
+            $first_name = $name_parts[0] ?? '';
+            $last_name = $name_parts[1] ?? '';
+        } else {
+            $first_name = $data['first_name'] ?? '';
+            $last_name = $data['last_name'] ?? '';
+        }
+
         $post_data = [
-            'post_title'  => $data['first_name'] . ' ' . $data['last_name'],
+            'post_title'  => trim($first_name . ' ' . $last_name),
             'post_type'   => 'lead',
             'post_status' => 'publish',
             'post_content' => $data['project_description'] ?? '',
@@ -240,12 +257,13 @@ class AdwrapContactAPI {
 
         if ($post_id && !is_wp_error($post_id)) {
             // Save meta fields
-            update_post_meta($post_id, '_lead_first_name', $data['first_name']);
-            update_post_meta($post_id, '_lead_last_name', $data['last_name']);
+            update_post_meta($post_id, '_lead_first_name', $first_name);
+            update_post_meta($post_id, '_lead_last_name', $last_name);
             update_post_meta($post_id, '_lead_email', $data['email']);
             update_post_meta($post_id, '_lead_phone', $data['phone']);
             update_post_meta($post_id, '_lead_service', $data['service']);
             update_post_meta($post_id, '_lead_source', $data['source'] ?? 'Not specified');
+            update_post_meta($post_id, '_lead_form_type', $form_type);
             update_post_meta($post_id, '_lead_ip', $this->get_client_ip());
             update_post_meta($post_id, '_lead_user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
 
@@ -276,6 +294,11 @@ class AdwrapContactAPI {
             'sanitize_callback' => 'sanitize_text_field',
             'default' => 'AdWrap Graphics Website'
         ]);
+        register_setting('adwrap_contact_settings', 'contact_services', [
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'default' => ''
+        ]);
     }
 
     /**
@@ -305,12 +328,14 @@ class AdwrapContactAPI {
             update_option('contact_recipient_email', sanitize_email($_POST['contact_recipient_email']));
             update_option('contact_from_email', sanitize_email($_POST['contact_from_email']));
             update_option('contact_from_name', sanitize_text_field($_POST['contact_from_name']));
+            update_option('contact_services', sanitize_textarea_field($_POST['contact_services']));
             echo '<div class="notice notice-success"><p>Contact form settings saved successfully!</p></div>';
         }
 
         $recipient_email = get_option('contact_recipient_email', '');
         $from_email = get_option('contact_from_email', 'noreply@adwrapgraphics.com');
         $from_name = get_option('contact_from_name', 'AdWrap Graphics Website');
+        $services = get_option('contact_services', '');
         $api_key_configured = !empty(env('RESEND_API_KEY'));
         
         // Get lead stats
@@ -422,6 +447,24 @@ class AdwrapContactAPI {
                             </p>
                         </td>
                     </tr>
+                    
+                    <tr>
+                        <th scope="row">
+                            <label for="contact_services">Services</label>
+                        </th>
+                        <td>
+                            <textarea 
+                                id="contact_services" 
+                                name="contact_services" 
+                                rows="10"
+                                class="large-text code"
+                                placeholder="Vehicle Wraps&#10;Fleet Graphics&#10;Window Graphics&#10;Wall Murals&#10;Banners & Signs&#10;Custom Design"
+                            ><?php echo esc_textarea($services); ?></textarea>
+                            <p class="description">
+                                List of services (one per line). These will be used in contact and quote forms.
+                            </p>
+                        </td>
+                    </tr>
                 </table>
                 
                 <?php submit_button(); ?>
@@ -477,6 +520,7 @@ class AdwrapContactAPI {
      * Register REST API routes
      */
     public function register_routes() {
+        // Contact form endpoint
         register_rest_route('adwrap/v1', '/contact', [
             'methods' => 'POST',
             'callback' => [$this, 'submit_contact'],
@@ -527,6 +571,81 @@ class AdwrapContactAPI {
                 ],
             ],
         ]);
+
+        // Quote form endpoint
+        register_rest_route('adwrap/v1', '/quote', [
+            'methods' => 'POST',
+            'callback' => [$this, 'submit_quote'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'full_name' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'email' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'validate_callback' => function($value) {
+                        return is_email($value);
+                    },
+                    'sanitize_callback' => 'sanitize_email',
+                ],
+                'phone' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'service' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'source' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'website' => [ // Honeypot field
+                    'required' => false,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+            ],
+        ]);
+
+        // Get services list endpoint
+        register_rest_route('adwrap/v1', '/services', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_services'],
+            'permission_callback' => '__return_true',
+        ]);
+    }
+
+    /**
+     * Get services list
+     */
+    public function get_services(): array {
+        $services_text = get_option('contact_services', '');
+        
+        if (empty($services_text)) {
+            // Default services if not configured
+            return [
+                ['name' => 'Vehicle Wraps'],
+                ['name' => 'Fleet Graphics'],
+                ['name' => 'Window Graphics'],
+                ['name' => 'Wall Murals'],
+                ['name' => 'Banners & Signs'],
+                ['name' => 'Custom Design'],
+            ];
+        }
+
+        // Parse services from textarea (one per line)
+        $services_array = array_filter(array_map('trim', explode("\n", $services_text)));
+        
+        return array_map(function($service) {
+            return ['name' => $service];
+        }, $services_array);
     }
 
     /**
@@ -587,7 +706,7 @@ class AdwrapContactAPI {
         $is_spam = $this->is_spam($data);
 
         // Save lead (even if spam, for review)
-        $lead_id = $this->save_lead($data, $is_spam);
+        $lead_id = $this->save_lead($data, 'contact', $is_spam);
 
         // If spam, silently succeed but don't send emails
         if ($is_spam) {
@@ -762,6 +881,166 @@ class AdwrapContactAPI {
         } catch (\Exception $e) {
             error_log('Confirmation email error: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Handle quote form submission
+     */
+    public function submit_quote(WP_REST_Request $request): WP_REST_Response {
+        // Verify internal API secret (if configured)
+        if (!$this->verify_internal_secret($request)) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Unauthorized request.',
+            ], 403);
+        }
+
+        // Check honeypot
+        if (!$this->check_honeypot($request)) {
+            // Silently fail for bots
+            return new WP_REST_Response([
+                'success' => true,
+                'message' => 'Thank you! We\'ll get back to you soon.',
+            ], 200);
+        }
+
+        // Check rate limit
+        if (!$this->check_rate_limit()) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Too many submissions. Please try again later.',
+            ], 429);
+        }
+
+        // Get form data
+        $data = [
+            'full_name' => $request->get_param('full_name'),
+            'email' => $request->get_param('email'),
+            'phone' => $request->get_param('phone'),
+            'service' => $request->get_param('service'),
+            'source' => $request->get_param('source') ?? 'home_page_quote_form',
+        ];
+
+        // Save lead
+        $lead_id = $this->save_lead($data, 'quote', false);
+
+        // Increment rate limit
+        $this->increment_rate_limit();
+
+        // Send emails
+        $resend = $this->getResend();
+        $recipient_email = get_option('contact_recipient_email');
+        $from_email = get_option('contact_from_email', 'noreply@adwrapgraphics.com');
+        $from_name = get_option('contact_from_name', 'AdWrap Graphics Website');
+
+        if ($resend === null || empty($recipient_email)) {
+            // Lead is saved, but email not configured
+            return new WP_REST_Response([
+                'success' => true,
+                'message' => 'Thank you! We\'ll get back to you with a quote soon.',
+            ], 200);
+        }
+
+        try {
+            // Build and send notification email for quote
+            $html_content = $this->build_quote_email_html($data, $lead_id);
+
+            $resend->emails->send([
+                'from' => "$from_name <$from_email>",
+                'to' => [$recipient_email],
+                'reply_to' => $data['email'],
+                'subject' => "New Quote Request - {$data['full_name']} - {$data['service']}",
+                'html' => $html_content,
+            ]);
+
+            // Send confirmation email to customer
+            $name_parts = explode(' ', $data['full_name'], 2);
+            $first_name = $name_parts[0] ?? $data['full_name'];
+            
+            $this->send_confirmation_email($resend, [
+                'first_name' => $first_name,
+                'email' => $data['email'],
+                'from_email' => $from_email,
+                'from_name' => $from_name,
+            ]);
+
+            return new WP_REST_Response([
+                'success' => true,
+                'message' => 'Thank you! We\'ll get back to you with a quote within 24 hours.',
+            ], 200);
+
+        } catch (\Exception $e) {
+            error_log('Quote form error: ' . $e->getMessage());
+            
+            // Lead is saved, email just failed
+            return new WP_REST_Response([
+                'success' => true,
+                'message' => 'Thank you! We\'ll get back to you with a quote soon.',
+            ], 200);
+        }
+    }
+
+    /**
+     * Build HTML email content for quote
+     */
+    private function build_quote_email_html(array $data, int $lead_id = 0): string {
+        $admin_link = $lead_id ? admin_url("post.php?post={$lead_id}&action=edit") : '';
+        
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #00ABB3; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
+                .field { margin-bottom: 15px; }
+                .label { font-weight: bold; color: #212331; }
+                .value { margin-top: 5px; padding: 10px; background: white; border-radius: 4px; }
+                .footer { margin-top: 20px; text-align: center; color: #666; font-size: 12px; }
+                .admin-link { margin-top: 20px; text-align: center; }
+                .admin-link a { background: #00ABB3; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; }
+                .badge { background: #00ABB3; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1 style="margin: 0;">New Quote Request <span class="badge">QUOTE FORM</span></h1>
+                </div>
+                <div class="content">
+                    <div class="field">
+                        <div class="label">Name</div>
+                        <div class="value">' . esc_html($data['full_name']) . '</div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Email</div>
+                        <div class="value"><a href="mailto:' . esc_attr($data['email']) . '">' . esc_html($data['email']) . '</a></div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Phone</div>
+                        <div class="value"><a href="tel:' . esc_attr($data['phone']) . '">' . esc_html($data['phone']) . '</a></div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Service Interested In</div>
+                        <div class="value">' . esc_html($data['service']) . '</div>
+                    </div>
+                    <div class="field">
+                        <div class="label">Source</div>
+                        <div class="value">' . esc_html($data['source']) . '</div>
+                    </div>
+                    ' . ($admin_link ? '<div class="admin-link"><a href="' . esc_url($admin_link) . '">View Lead in Admin</a></div>' : '') . '
+                </div>
+                <div class="footer">
+                    <p>This email was sent from the AdWrap Graphics website quote form.</p>
+                </div>
+            </div>
+        </body>
+        </html>';
+
+        return $html;
     }
 }
 
