@@ -320,19 +320,20 @@ final class AdwrapPortfolio
             return null;
         }
 
-        $url = wp_get_attachment_url($attachment_id);
+        // Apply filters to get bucket URL
+        $url = apply_filters('wp_get_attachment_url', wp_get_attachment_url($attachment_id), $attachment_id);
         $meta = wp_get_attachment_metadata($attachment_id);
         $sizes = [];
 
         if (!empty($meta['sizes'])) {
-            $upload_dir = wp_upload_dir();
-            $base_url = trailingslashit($upload_dir['baseurl']);
-            $file_path = dirname($meta['file']);
-
             foreach ($meta['sizes'] as $size_name => $size_data) {
-                $sizes[$size_name] = $base_url . $file_path . '/' . $size_data['file'];
-                $sizes[$size_name . '-width'] = $size_data['width'];
-                $sizes[$size_name . '-height'] = $size_data['height'];
+                // Use wp_get_attachment_image_url with filters for bucket URL
+                $size_url = wp_get_attachment_image_url($attachment_id, $size_name);
+                if ($size_url) {
+                    $sizes[$size_name] = apply_filters('wp_get_attachment_url', $size_url, $attachment_id);
+                    $sizes[$size_name . '-width'] = $size_data['width'];
+                    $sizes[$size_name . '-height'] = $size_data['height'];
+                }
             }
         }
 
@@ -359,12 +360,27 @@ final class AdwrapPortfolio
     {
         $thumbnail_id = get_post_thumbnail_id($post->ID);
         $industries = wp_get_post_terms($post->ID, 'portfolio_industry', ['fields' => 'all']);
+        
+        // Get ACF 'before' image
+        $before_image = get_field('before', $post->ID);
+        $before_formatted = null;
+        
+        if ($before_image) {
+            if (is_array($before_image) && isset($before_image['ID'])) {
+                // ACF returns full image array
+                $before_formatted = $this->format_image((int) $before_image['ID']);
+            } elseif (is_numeric($before_image)) {
+                // ACF returns image ID
+                $before_formatted = $this->format_image((int) $before_image);
+            }
+        }
 
         return [
             'id'           => $post->ID,
             'title'        => $post->post_title,
             'slug'         => $post->post_name,
             'excerpt'      => $post->post_excerpt,
+            'before'       => $before_formatted,
             'image'        => $this->format_image((int) $thumbnail_id),
             'industries'   => $this->format_terms($industries),
             'date'         => $post->post_date,
@@ -380,6 +396,18 @@ final class AdwrapPortfolio
     {
         $thumbnail_id = get_post_thumbnail_id($post->ID);
         $industries = wp_get_post_terms($post->ID, 'portfolio_industry', ['fields' => 'all']);
+        
+        // Get ACF 'before' image
+        $before_image = get_field('before', $post->ID);
+        $before_formatted = null;
+        
+        if ($before_image) {
+            if (is_array($before_image) && isset($before_image['ID'])) {
+                $before_formatted = $this->format_image((int) $before_image['ID']);
+            } elseif (is_numeric($before_image)) {
+                $before_formatted = $this->format_image((int) $before_image);
+            }
+        }
         
         // Get gallery images
         $gallery = get_field('gallery', $post->ID) ?: [];
@@ -401,6 +429,7 @@ final class AdwrapPortfolio
             'slug'         => $post->post_name,
             'excerpt'      => $post->post_excerpt,
             'content'      => apply_filters('the_content', $post->post_content),
+            'before'       => $before_formatted,
             'image'        => $this->format_image((int) $thumbnail_id),
             'gallery'      => $formatted_gallery,
             'industries'   => $this->format_terms($industries),
