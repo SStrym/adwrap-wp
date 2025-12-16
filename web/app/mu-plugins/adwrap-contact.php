@@ -299,6 +299,11 @@ class AdwrapContactAPI {
             'sanitize_callback' => 'sanitize_textarea_field',
             'default' => ''
         ]);
+        register_setting('adwrap_contact_settings', 'contact_sources', [
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'default' => ''
+        ]);
     }
 
     /**
@@ -329,6 +334,7 @@ class AdwrapContactAPI {
             update_option('contact_from_email', sanitize_email($_POST['contact_from_email']));
             update_option('contact_from_name', sanitize_text_field($_POST['contact_from_name']));
             update_option('contact_services', sanitize_textarea_field($_POST['contact_services']));
+            update_option('contact_sources', sanitize_textarea_field($_POST['contact_sources']));
             echo '<div class="notice notice-success"><p>Contact form settings saved successfully!</p></div>';
         }
 
@@ -336,6 +342,7 @@ class AdwrapContactAPI {
         $from_email = get_option('contact_from_email', 'noreply@adwrapgraphics.com');
         $from_name = get_option('contact_from_name', 'AdWrap Graphics Website');
         $services = get_option('contact_services', '');
+        $sources = get_option('contact_sources', '');
         $api_key_configured = !empty(env('RESEND_API_KEY'));
         
         // Get lead stats
@@ -462,6 +469,24 @@ class AdwrapContactAPI {
                             ><?php echo esc_textarea($services); ?></textarea>
                             <p class="description">
                                 List of services (one per line). These will be used in contact and quote forms.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th scope="row">
+                            <label for="contact_sources">Sources</label>
+                        </th>
+                        <td>
+                            <textarea 
+                                id="contact_sources" 
+                                name="contact_sources" 
+                                rows="8"
+                                class="large-text code"
+                                placeholder="Google Search&#10;Social Media&#10;Referral&#10;Advertisement&#10;Trade Show / Event&#10;Other"
+                            ><?php echo esc_textarea($sources); ?></textarea>
+                            <p class="description">
+                                List of sources (one per line). These will be used in contact and quote forms.
                             </p>
                         </td>
                     </tr>
@@ -614,16 +639,23 @@ class AdwrapContactAPI {
             ],
         ]);
 
-        // Get services list endpoint
-        register_rest_route('adwrap/v1', '/services', [
+        // Get services list endpoint for forms
+        register_rest_route('adwrap/v1', '/contact-services', [
             'methods' => 'GET',
             'callback' => [$this, 'get_services'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        // Get sources list endpoint for forms
+        register_rest_route('adwrap/v1', '/contact-sources', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_sources'],
             'permission_callback' => '__return_true',
         ]);
     }
 
     /**
-     * Get services list
+     * Get services list for forms
      */
     public function get_services(): array {
         $services_text = get_option('contact_services', '');
@@ -646,6 +678,32 @@ class AdwrapContactAPI {
         return array_map(function($service) {
             return ['name' => $service];
         }, $services_array);
+    }
+
+    /**
+     * Get sources list for forms
+     */
+    public function get_sources(): array {
+        $sources_text = get_option('contact_sources', '');
+        
+        if (empty($sources_text)) {
+            // Default sources if not configured
+            return [
+                ['name' => 'Google Search'],
+                ['name' => 'Social Media'],
+                ['name' => 'Referral'],
+                ['name' => 'Advertisement'],
+                ['name' => 'Trade Show / Event'],
+                ['name' => 'Other'],
+            ];
+        }
+
+        // Parse sources from textarea (one per line)
+        $sources_array = array_filter(array_map('trim', explode("\n", $sources_text)));
+        
+        return array_map(function($source) {
+            return ['name' => $source];
+        }, $sources_array);
     }
 
     /**

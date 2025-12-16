@@ -572,3 +572,4 @@ class Next_Revalidation {
 // Initialize the plugin
 $next_revalidation = new Next_Revalidation();
 
+
