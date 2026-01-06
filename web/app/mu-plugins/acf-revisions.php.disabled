@@ -1,0 +1,245 @@
+<?php
+
+/**
+ * Plugin Name: ACF Revisions Support
+ * Description: Enables revision support for ACF fields on custom post types
+ */
+
+final class ACFRevisionsSupport
+{
+    private array $supported_post_types = ['service', 'portfolio', 'success_story'];
+    
+    private array $acf_fields_cache = [];
+
+    public function __construct()
+    {
+        add_action('_wp_put_post_revision', [$this, 'save_acf_to_revision']);
+        add_action('wp_restore_post_revision', [$this, 'restore_acf_from_revision'], 10, 2);
+        add_filter('wp_save_post_revision_post_has_changed', [$this, 'check_acf_changes'], 10, 3);
+        add_action('add_meta_boxes', [$this, 'add_revisions_metabox']);
+    }
+
+    public function add_revisions_metabox(): void
+    {
+        foreach ($this->supported_post_types as $post_type) {
+            add_meta_box(
+                'revisions_metabox',
+                'Revisions',
+                [$this, 'render_revisions_metabox'],
+                $post_type,
+                'side',
+                'low'
+            );
+        }
+    }
+
+    public function render_revisions_metabox(WP_Post $post): void
+    {
+        $revisions = wp_get_post_revisions($post->ID, ['posts_per_page' => 10]);
+        
+        if (empty($revisions)) {
+            echo '<p>No revisions yet.</p>';
+            return;
+        }
+
+        echo '<ul style="margin: 0; padding: 0; list-style: none;">';
+        
+        foreach ($revisions as $revision) {
+            $date = wp_date('M j, Y @ H:i', strtotime($revision->post_modified));
+            $author = get_the_author_meta('display_name', $revision->post_author);
+            $restore_link = wp_nonce_url(
+                admin_url('revision.php?action=restore&revision=' . $revision->ID),
+                'restore-post_' . $revision->ID
+            );
+            $compare_link = admin_url('revision.php?revision=' . $revision->ID);
+            
+            echo '<li style="padding: 8px 0; border-bottom: 1px solid #eee;">';
+            echo '<strong>' . esc_html($date) . '</strong><br>';
+            echo '<small>by ' . esc_html($author) . '</small><br>';
+            echo '<a href="' . esc_url($compare_link) . '">View</a>';
+            echo ' | <a href="' . esc_url($restore_link) . '" onclick="return confirm(\'Restore this revision?\')">Restore</a>';
+            echo '</li>';
+        }
+        
+        echo '</ul>';
+        
+        $all_revisions_link = admin_url('revision.php?revision=' . $post->ID);
+        echo '<p style="margin-top: 10px;"><a href="' . esc_url($all_revisions_link) . '">Browse all revisions</a></p>';
+    }
+
+    public function save_acf_to_revision(int $revision_id): void
+    {
+        $revision = get_post($revision_id);
+        
+        if (!$revision || $revision->post_type !== 'revision') {
+            return;
+        }
+
+        $parent = get_post($revision->post_parent);
+        
+        if (!$parent || !in_array($parent->post_type, $this->supported_post_types, true)) {
+            return;
+        }
+
+        $fields = get_fields($parent->ID);
+        
+        if (!$fields) {
+            return;
+        }
+
+        foreach ($fields as $field_name => $field_value) {
+            $this->copy_field_to_revision($field_name, $field_value, $revision_id, $parent->ID);
+        }
+    }
+
+    private function copy_field_to_revision(string $field_name, mixed $value, int $revision_id, int $parent_id): void
+    {
+        $field_object = get_field_object($field_name, $parent_id);
+        
+        if (!$field_object) {
+            return;
+        }
+
+        if ($field_object['type'] === 'repeater' || $field_object['type'] === 'flexible_content' || $field_object['type'] === 'group') {
+            update_post_meta($revision_id, '_' . $field_name, maybe_serialize($value));
+            update_post_meta($revision_id, $field_name, maybe_serialize($value));
+        } else {
+            $raw_value = get_post_meta($parent_id, $field_name, true);
+            update_post_meta($revision_id, $field_name, $raw_value);
+            
+            $underscore_value = get_post_meta($parent_id, '_' . $field_name, true);
+            if ($underscore_value) {
+                update_post_meta($revision_id, '_' . $field_name, $underscore_value);
+            }
+        }
+    }
+
+    public function restore_acf_from_revision(int $post_id, int $revision_id): void
+    {
+        $post = get_post($post_id);
+        
+        if (!$post || !in_array($post->post_type, $this->supported_post_types, true)) {
+            return;
+        }
+
+        $meta = get_post_meta($revision_id);
+        
+        if (!$meta) {
+            return;
+        }
+
+        $acf_field_keys = $this->get_acf_meta_keys($post_id);
+        
+        foreach ($meta as $key => $values) {
+            if ($this->is_acf_meta_key($key, $acf_field_keys)) {
+                $value = maybe_unserialize($values[0]);
+                update_post_meta($post_id, $key, $value);
+            }
+        }
+
+        clean_post_cache($post_id);
+    }
+
+    public function check_acf_changes(bool $has_changed, WP_Post $last_revision, WP_Post $post): bool
+    {
+        if ($has_changed) {
+            return true;
+        }
+
+        if (!in_array($post->post_type, $this->supported_post_types, true)) {
+            return $has_changed;
+        }
+
+        $current_fields = get_fields($post->ID);
+        $revision_meta = get_post_meta($last_revision->ID);
+        
+        if (!$current_fields) {
+            return $has_changed;
+        }
+
+        foreach ($current_fields as $field_name => $current_value) {
+            $revision_value = isset($revision_meta[$field_name]) 
+                ? maybe_unserialize($revision_meta[$field_name][0]) 
+                : null;
+            
+            if ($this->values_differ($current_value, $revision_value)) {
+                return true;
+            }
+        }
+
+        return $has_changed;
+    }
+
+    private function values_differ(mixed $value1, mixed $value2): bool
+    {
+        return maybe_serialize($value1) !== maybe_serialize($value2);
+    }
+
+    private function get_acf_meta_keys(int $post_id): array
+    {
+        if (isset($this->acf_fields_cache[$post_id])) {
+            return $this->acf_fields_cache[$post_id];
+        }
+
+        $keys = [];
+        $fields = get_field_objects($post_id);
+        
+        if ($fields) {
+            foreach ($fields as $field) {
+                $keys[] = $field['name'];
+                $keys[] = '_' . $field['name'];
+                
+                if (in_array($field['type'], ['repeater', 'flexible_content', 'group'], true)) {
+                    $keys = array_merge($keys, $this->get_nested_field_keys($field, $post_id));
+                }
+            }
+        }
+
+        $this->acf_fields_cache[$post_id] = $keys;
+        
+        return $keys;
+    }
+
+    private function get_nested_field_keys(array $field, int $post_id): array
+    {
+        $keys = [];
+        $prefix = $field['name'];
+        
+        global $wpdb;
+        $meta_keys = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT DISTINCT meta_key FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key LIKE %s",
+                $post_id,
+                $prefix . '%'
+            )
+        );
+        
+        foreach ($meta_keys as $key) {
+            $keys[] = $key;
+        }
+
+        return $keys;
+    }
+
+    private function is_acf_meta_key(string $key, array $acf_keys): bool
+    {
+        if (in_array($key, $acf_keys, true)) {
+            return true;
+        }
+
+        foreach ($acf_keys as $acf_key) {
+            $base_key = ltrim($acf_key, '_');
+            if (str_starts_with($key, $base_key . '_') || str_starts_with($key, '_' . $base_key . '_')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+add_action('plugins_loaded', function () {
+    if (function_exists('get_fields')) {
+        new ACFRevisionsSupport();
+    }
+});

@@ -52,7 +52,7 @@ final class AdwrapServices
             'hierarchical'       => false,
             'menu_position'      => 5,
             'menu_icon'          => 'dashicons-admin-appearance',
-            'supports'           => ['title', 'thumbnail', 'excerpt', 'page-attributes'],
+            'supports'           => ['title', 'thumbnail', 'excerpt', 'page-attributes', 'revisions'],
             'show_in_rest'       => true,
             'rest_base'          => 'services',
         ];
@@ -171,6 +171,8 @@ final class AdwrapServices
             'featured_image'   => $thumbnail ?: null,
             'hero'             => get_field('hero', $post->ID) ?: [],
             'card'             => get_field('card', $post->ID) ?: [],
+            'benefits'         => get_field('benefits', $post->ID) ?: [],
+            'show_services_list' => (bool) get_field('show_services_list', $post->ID),
             'services_list'    => get_field('services_list', $post->ID) ?: [],
             'content_sections' => get_field('content_sections', $post->ID) ?: [],
             'gallery'          => get_field('gallery', $post->ID) ?: [],
