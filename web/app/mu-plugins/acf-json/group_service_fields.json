@@ -189,6 +189,25 @@
             ]
         },
         {
+            "key": "field_show_benefits",
+            "label": "Show Benefits Section",
+            "name": "show_benefits",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Enable to show the benefits section on the page",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Show",
+            "ui_off_text": "Hide"
+        },
+        {
             "key": "field_service_benefits",
             "label": "Benefits Section",
             "name": "benefits",
@@ -196,7 +215,15 @@
             "type": "repeater",
             "instructions": "Add benefit items with icons (displayed as 6-column grid)",
             "required": 0,
-            "conditional_logic": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_show_benefits",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
             "wrapper": {
                 "width": "",
                 "class": "",

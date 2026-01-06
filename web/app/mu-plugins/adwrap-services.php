@@ -171,6 +171,7 @@ final class AdwrapServices
             'featured_image'   => $thumbnail ?: null,
             'hero'             => get_field('hero', $post->ID) ?: [],
             'card'             => get_field('card', $post->ID) ?: [],
+            'show_benefits'    => (bool) get_field('show_benefits', $post->ID),
             'benefits'         => get_field('benefits', $post->ID) ?: [],
             'show_services_list' => (bool) get_field('show_services_list', $post->ID),
             'services_list'    => get_field('services_list', $post->ID) ?: [],
