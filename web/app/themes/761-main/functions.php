@@ -16,6 +16,8 @@ class HeadlessWPSecurity {
         register_nav_menus([
             'primary' => 'Primary Menu',
             'footer' => 'Footer Menu',
+            'footer-services' => 'Footer Services Menu',
+            'footer-legal' => 'Footer Legal Menu',
         ]);
 
         // Initialize all security measures
@@ -454,7 +456,7 @@ class AdwrapMenuAPI {
         foreach ($items as $item) {
             $menu_item = [
                 'id' => $item->ID,
-                'title' => $item->title,
+                'title' => html_entity_decode($item->title, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                 'url' => $this->make_relative_url($item->url),
                 'target' => $item->target ?: '_self',
                 'children' => [],
