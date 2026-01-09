@@ -31,8 +31,14 @@ final class ACFRevisionsSupport
         // Enable debug mode in development
         $this->debug = defined('WP_DEBUG') && WP_DEBUG;
 
-        // Core revision hooks
+        // ВАЖНО: Сохраняем ACF в ревизию ПОСЛЕ того как ACF сохранит свои данные
+        // acf/save_post с приоритетом 20 (ACF использует 10)
+        add_action('acf/save_post', [$this, 'save_acf_to_latest_revision'], 20);
+        
+        // Также слушаем стандартный хук на случай если ACF не сработал
         add_action('_wp_put_post_revision', [$this, 'save_acf_to_revision'], 10, 1);
+        
+        // Восстановление
         add_action('wp_restore_post_revision', [$this, 'restore_acf_from_revision'], 10, 2);
         
         // Force revision creation when ACF fields change
@@ -170,7 +176,95 @@ final class ACFRevisionsSupport
     }
 
     /**
-     * Save all ACF fields to revision
+     * Save ACF fields to the latest revision after ACF has saved its data
+     * This is the main method - triggered after ACF saves
+     */
+    public function save_acf_to_latest_revision(int $post_id): void
+    {
+        // Skip if this is a revision itself
+        if (wp_is_post_revision($post_id)) {
+            return;
+        }
+
+        // Skip autosaves
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+
+        $post = get_post($post_id);
+
+        if (!$post || !$this->is_supported_post_type($post->post_type)) {
+            return;
+        }
+
+        // Get the latest revision
+        $revisions = wp_get_post_revisions($post_id, [
+            'posts_per_page' => 1,
+            'orderby' => 'ID',
+            'order' => 'DESC',
+        ]);
+
+        if (empty($revisions)) {
+            $this->log('No revisions found for post', ['post_id' => $post_id]);
+            return;
+        }
+
+        $latest_revision = reset($revisions);
+        
+        $this->log('Saving ACF to latest revision (after ACF save)', [
+            'post_id' => $post_id,
+            'revision_id' => $latest_revision->ID,
+            'post_type' => $post->post_type,
+        ]);
+
+        // Copy all ACF meta to the revision
+        $this->copy_acf_meta_to_revision($post_id, $latest_revision->ID);
+    }
+
+    /**
+     * Copy ACF meta from post to revision
+     */
+    private function copy_acf_meta_to_revision(int $source_id, int $revision_id): void
+    {
+        global $wpdb;
+
+        // Get all post meta from source
+        $all_meta = get_post_meta($source_id);
+
+        if (empty($all_meta)) {
+            $this->log('No meta found for source post', ['source_id' => $source_id]);
+            return;
+        }
+
+        $saved_keys = [];
+
+        foreach ($all_meta as $meta_key => $meta_values) {
+            // Skip WordPress internal meta
+            if ($this->is_wp_internal_meta($meta_key)) {
+                continue;
+            }
+
+            // Delete existing meta in revision first
+            delete_metadata('post', $revision_id, $meta_key);
+
+            // Copy meta to revision
+            foreach ($meta_values as $meta_value) {
+                $value = maybe_unserialize($meta_value);
+                add_metadata('post', $revision_id, $meta_key, $value);
+                $saved_keys[] = $meta_key;
+            }
+        }
+
+        $this->log('Copied meta keys to revision', [
+            'source_id' => $source_id,
+            'revision_id' => $revision_id,
+            'count' => count($saved_keys),
+            'sample_keys' => array_slice(array_unique($saved_keys), 0, 30),
+        ]);
+    }
+
+    /**
+     * Save all ACF fields to revision (fallback for _wp_put_post_revision hook)
      */
     public function save_acf_to_revision(int $revision_id): void
     {
@@ -227,6 +321,8 @@ final class ACFRevisionsSupport
      */
     public function restore_acf_from_revision(int $post_id, int $revision_id): void
     {
+        global $wpdb;
+
         $post = get_post($post_id);
 
         if (!$post || !$this->is_supported_post_type($post->post_type)) {
@@ -247,19 +343,25 @@ final class ACFRevisionsSupport
             return;
         }
 
-        // Get current meta keys to know what to delete
-        $current_meta = get_post_meta($post_id);
-        
-        // Delete current ACF meta (to handle removed fields)
-        foreach ($current_meta as $meta_key => $meta_values) {
-            if (!$this->is_wp_internal_meta($meta_key)) {
-                delete_post_meta($post_id, $meta_key);
-            }
-        }
+        // ВАЖНО: Используем прямой SQL для удаления, чтобы гарантировать полную очистку
+        // Это особенно важно для Flexible Content полей
+        $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$wpdb->postmeta} 
+            WHERE post_id = %d 
+            AND meta_key NOT LIKE '\\_wp%%' 
+            AND meta_key NOT LIKE '\\_edit%%'
+            AND meta_key NOT LIKE '\\_encloseme%%'
+            AND meta_key NOT LIKE '\\_pingme%%'
+            AND meta_key != '_thumbnail_id'",
+            $post_id
+        ));
+
+        // Clear object cache after deletion
+        wp_cache_delete($post_id, 'post_meta');
 
         $restored_keys = [];
 
-        // Restore meta from revision
+        // Restore meta from revision using add_post_meta (не update!)
         foreach ($revision_meta as $meta_key => $meta_values) {
             if ($this->is_wp_internal_meta($meta_key)) {
                 continue;
@@ -267,14 +369,16 @@ final class ACFRevisionsSupport
 
             foreach ($meta_values as $meta_value) {
                 $value = maybe_unserialize($meta_value);
-                update_post_meta($post_id, $meta_key, $value);
+                // Используем add_post_meta для корректного восстановления
+                add_post_meta($post_id, $meta_key, $value);
                 $restored_keys[] = $meta_key;
             }
         }
 
         $this->log('Restored meta keys from revision', [
             'count' => count($restored_keys),
-            'keys' => array_slice($restored_keys, 0, 20),
+            'unique_keys' => count(array_unique($restored_keys)),
+            'sample_keys' => array_slice(array_unique($restored_keys), 0, 30),
         ]);
     }
 
