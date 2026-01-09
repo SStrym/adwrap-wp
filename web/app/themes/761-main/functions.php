@@ -450,32 +450,46 @@ class AdwrapMenuAPI {
     }
 
     private function build_menu_tree(array $items): array {
-        $menu = [];
-        $children = [];
-
+        // Создаём массив всех элементов по ID
+        $items_by_id = [];
         foreach ($items as $item) {
-            $menu_item = [
+            $items_by_id[$item->ID] = [
                 'id' => $item->ID,
                 'title' => html_entity_decode($item->title, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                 'url' => $this->make_relative_url($item->url),
                 'target' => $item->target ?: '_self',
+                'parent_id' => (int) $item->menu_item_parent,
                 'children' => [],
             ];
+        }
 
-            if ($item->menu_item_parent == 0) {
-                $menu[$item->ID] = $menu_item;
+        // Строим дерево — присваиваем детей родителям (поддержка неограниченной вложенности)
+        $menu = [];
+        foreach ($items_by_id as $id => &$item) {
+            if ($item['parent_id'] === 0) {
+                // Корневой элемент
+                $menu[$id] = &$item;
             } else {
-                $children[$item->menu_item_parent][] = $menu_item;
+                // Дочерний элемент — добавляем к родителю
+                if (isset($items_by_id[$item['parent_id']])) {
+                    $items_by_id[$item['parent_id']]['children'][] = &$item;
+                }
             }
         }
+        unset($item);
 
-        foreach ($children as $parent_id => $child_items) {
-            if (isset($menu[$parent_id])) {
-                $menu[$parent_id]['children'] = $child_items;
-            }
-        }
+        // Убираем parent_id из результата (не нужен на фронте)
+        $clean_tree = function(array $items) use (&$clean_tree): array {
+            return array_values(array_map(function($item) use (&$clean_tree) {
+                unset($item['parent_id']);
+                if (!empty($item['children'])) {
+                    $item['children'] = $clean_tree($item['children']);
+                }
+                return $item;
+            }, $items));
+        };
 
-        return array_values($menu);
+        return $clean_tree($menu);
     }
 
     private function make_relative_url(string $url): string {
