@@ -50,7 +50,7 @@ class AdwrapScriptsManager {
      * Sanitize script content - allow script tags but sanitize dangerous content
      */
     public function sanitize_script(string $value): string {
-        // Allow script tags but prevent PHP execution
+        $value = wp_unslash($value);
         return str_replace(['<?php', '<?', '?>'], '', $value);
     }
 
@@ -78,17 +78,17 @@ class AdwrapScriptsManager {
 
         // Save settings
         if (isset($_POST['submit']) && check_admin_referer('adwrap_scripts_settings')) {
-            update_option('gtm_id', sanitize_text_field($_POST['gtm_id'] ?? ''));
-            update_option('head_scripts', $this->sanitize_script($_POST['head_scripts'] ?? ''));
-            update_option('body_start_scripts', $this->sanitize_script($_POST['body_start_scripts'] ?? ''));
-            update_option('body_end_scripts', $this->sanitize_script($_POST['body_end_scripts'] ?? ''));
+            update_option('gtm_id', sanitize_text_field(wp_unslash($_POST['gtm_id'] ?? '')));
+            update_option('head_scripts', $this->sanitize_script(wp_unslash($_POST['head_scripts'] ?? '')));
+            update_option('body_start_scripts', $this->sanitize_script(wp_unslash($_POST['body_start_scripts'] ?? '')));
+            update_option('body_end_scripts', $this->sanitize_script(wp_unslash($_POST['body_end_scripts'] ?? '')));
             echo '<div class="notice notice-success"><p>Scripts settings saved successfully!</p></div>';
         }
 
-        $gtm_id = get_option('gtm_id', '');
-        $head_scripts = get_option('head_scripts', '');
-        $body_start_scripts = get_option('body_start_scripts', '');
-        $body_end_scripts = get_option('body_end_scripts', '');
+        $gtm_id = wp_unslash(get_option('gtm_id', ''));
+        $head_scripts = wp_unslash(get_option('head_scripts', ''));
+        $body_start_scripts = wp_unslash(get_option('body_start_scripts', ''));
+        $body_end_scripts = wp_unslash(get_option('body_end_scripts', ''));
         ?>
         <div class="wrap">
             <h1>Scripts & Analytics</h1>
@@ -228,10 +228,10 @@ class AdwrapScriptsManager {
      */
     public function get_scripts(): array {
         return [
-            'gtm_id' => get_option('gtm_id', ''),
-            'head_scripts' => get_option('head_scripts', ''),
-            'body_start_scripts' => get_option('body_start_scripts', ''),
-            'body_end_scripts' => get_option('body_end_scripts', ''),
+            'gtm_id' => wp_unslash(get_option('gtm_id', '')),
+            'head_scripts' => wp_unslash(get_option('head_scripts', '')),
+            'body_start_scripts' => wp_unslash(get_option('body_start_scripts', '')),
+            'body_end_scripts' => wp_unslash(get_option('body_end_scripts', '')),
         ];
     }
 }
