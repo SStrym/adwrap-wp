@@ -153,6 +153,7 @@ function adwrap_get_post_seo($post) {
         'keywords' => '',
         'modified_time' => get_the_modified_time('c', $post),
         'published_time' => get_the_time('c', $post),
+        'schema' => null,
         'plugin' => $plugin,
     ];
 
@@ -253,6 +254,18 @@ function adwrap_get_yoast_seo($post, $seo) {
     $focus_kw = get_post_meta($post->ID, '_yoast_wpseo_focuskw', true);
     if ($focus_kw) {
         $seo['keywords'] = $focus_kw;
+    }
+
+    // Schema from Yoast Meta Surface
+    if (class_exists('Yoast\WP\SEO\Surfaces\Meta_Surface')) {
+        try {
+            $meta = YoastSEO()->meta->for_post($post->ID);
+            if ($meta && isset($meta->schema)) {
+                $seo['schema'] = $meta->schema;
+            }
+        } catch (\Exception $e) {
+            // Schema not available
+        }
     }
 
     return $seo;

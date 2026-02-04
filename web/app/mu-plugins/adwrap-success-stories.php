@@ -198,6 +198,7 @@ function format_success_story_full($post) {
 
     return array_merge($card, [
         'status' => $post->post_status,
+        'link' => get_permalink($post->ID),
         'content' => get_field('content', $post->ID) ?: '',
         'stats' => $stats,
         'gallery' => $gallery,
@@ -209,41 +210,75 @@ function format_success_story_full($post) {
             'title' => get_the_title($next_post->ID),
             'slug' => $next_post->post_name,
         ] : null,
-        'yoast_head_json' => adwrap_get_yoast_head_json($post->ID),
+        'yoast_head_json' => function_exists('adwrap_get_post_seo') ? adwrap_get_post_seo(get_post($post->ID)) : null,
     ]);
 }
 
 /**
- * Get Yoast SEO head JSON for a post
+ * Get Yoast SEO head JSON for a post (same format as yoast_head_json)
  */
 function adwrap_get_yoast_head_json($post_id) {
-    if (!class_exists('WPSEO_Meta')) {
+    if (!class_exists('Yoast\WP\SEO\Surfaces\Meta_Surface')) {
         return null;
     }
 
-    $meta = YoastSEO()->meta->for_post($post_id);
-    if (!$meta) {
+    try {
+        $meta = YoastSEO()->meta->for_post($post_id);
+        if (!$meta) {
+            return null;
+        }
+
+        $og_images = [];
+        if (!empty($meta->open_graph_images)) {
+            foreach ($meta->open_graph_images as $image) {
+                $og_images[] = [
+                    'width'  => $image['width'] ?? 0,
+                    'height' => $image['height'] ?? 0,
+                    'url'    => $image['url'] ?? '',
+                    'type'   => $image['type'] ?? '',
+                ];
+            }
+        }
+
+        $robots = $meta->robots ?? [];
+        $robots_formatted = [];
+        if (is_array($robots)) {
+            foreach ($robots as $key => $value) {
+                if ($value === true || $value === 'index' || $value === 'follow') {
+                    $robots_formatted[$key] = $key;
+                } elseif ($value === false || $value === 'noindex' || $value === 'nofollow') {
+                    $robots_formatted[$key] = 'no' . $key;
+                } elseif (is_string($value)) {
+                    $robots_formatted[$key] = $value;
+                }
+            }
+        }
+
+        $result = [
+            'title'                 => $meta->title ?? '',
+            'description'           => $meta->description ?? '',
+            'robots'                => $robots_formatted,
+            'canonical'             => $meta->canonical ?? '',
+            'og_locale'             => $meta->open_graph_locale ?? 'en_US',
+            'og_type'               => $meta->open_graph_type ?? 'article',
+            'og_title'              => $meta->open_graph_title ?? '',
+            'og_description'        => $meta->open_graph_description ?? '',
+            'og_url'                => $meta->open_graph_url ?? '',
+            'og_site_name'          => $meta->open_graph_site_name ?? '',
+            'article_modified_time' => $meta->open_graph_article_modified_time ?? '',
+            'article_published_time'=> $meta->open_graph_article_published_time ?? '',
+            'og_image'              => $og_images,
+            'twitter_card'          => $meta->twitter_card ?? 'summary_large_image',
+            'twitter_title'         => $meta->twitter_title ?? '',
+            'twitter_description'   => $meta->twitter_description ?? '',
+            'twitter_image'         => $meta->twitter_image ?? '',
+            'schema'                => $meta->schema ?? null,
+        ];
+
+        return $result;
+    } catch (Exception $e) {
         return null;
     }
-
-    return [
-        'title'                  => $meta->title ?? '',
-        'description'            => $meta->description ?? '',
-        'canonical'              => $meta->canonical ?? '',
-        'og_locale'              => $meta->open_graph_locale ?? 'en_US',
-        'og_type'                => $meta->open_graph_type ?? 'article',
-        'og_title'               => $meta->open_graph_title ?? '',
-        'og_description'         => $meta->open_graph_description ?? '',
-        'og_url'                 => $meta->open_graph_url ?? '',
-        'og_site_name'           => $meta->open_graph_site_name ?? '',
-        'og_image'               => $meta->open_graph_images ?? [],
-        'article_modified_time'  => $meta->open_graph_article_modified_time ?? '',
-        'twitter_card'           => $meta->twitter_card ?? 'summary_large_image',
-        'twitter_title'          => $meta->twitter_title ?? '',
-        'twitter_description'    => $meta->twitter_description ?? '',
-        'twitter_image'          => $meta->twitter_image ?? '',
-        'schema'                 => $meta->schema ?? null,
-    ];
 }
 
 /**
