@@ -167,6 +167,7 @@ final class AdwrapServices
             'id'               => $post->ID,
             'title'            => $post->post_title,
             'slug'             => $post->post_name,
+            'status'           => $post->post_status,
             'excerpt'          => $post->post_excerpt,
             'featured_image'   => $thumbnail ?: null,
             'hero'             => get_field('hero', $post->ID) ?: [],
@@ -178,6 +179,43 @@ final class AdwrapServices
             'content_sections' => get_field('content_sections', $post->ID) ?: [],
             'gallery'          => get_field('gallery', $post->ID) ?: [],
             'cta'              => get_field('cta', $post->ID) ?: [],
+            'yoast_head_json'  => $this->get_yoast_head_json($post->ID),
+        ];
+    }
+
+    /**
+     * Get Yoast SEO head JSON for a post
+     *
+     * @return array<string, mixed>|null
+     */
+    private function get_yoast_head_json(int $post_id): ?array
+    {
+        if (!class_exists('WPSEO_Meta')) {
+            return null;
+        }
+
+        $meta = YoastSEO()->meta->for_post($post_id);
+        if (!$meta) {
+            return null;
+        }
+
+        return [
+            'title'                  => $meta->title ?? '',
+            'description'            => $meta->description ?? '',
+            'canonical'              => $meta->canonical ?? '',
+            'og_locale'              => $meta->open_graph_locale ?? 'en_US',
+            'og_type'                => $meta->open_graph_type ?? 'article',
+            'og_title'               => $meta->open_graph_title ?? '',
+            'og_description'         => $meta->open_graph_description ?? '',
+            'og_url'                 => $meta->open_graph_url ?? '',
+            'og_site_name'           => $meta->open_graph_site_name ?? '',
+            'og_image'               => $meta->open_graph_images ?? [],
+            'article_modified_time'  => $meta->open_graph_article_modified_time ?? '',
+            'twitter_card'           => $meta->twitter_card ?? 'summary_large_image',
+            'twitter_title'          => $meta->twitter_title ?? '',
+            'twitter_description'    => $meta->twitter_description ?? '',
+            'twitter_image'          => $meta->twitter_image ?? '',
+            'schema'                 => $meta->schema ?? null,
         ];
     }
 }

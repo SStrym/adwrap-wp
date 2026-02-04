@@ -197,6 +197,7 @@ function format_success_story_full($post) {
     $next_post = get_adjacent_post(false, '', false, 'category');
 
     return array_merge($card, [
+        'status' => $post->post_status,
         'content' => get_field('content', $post->ID) ?: '',
         'stats' => $stats,
         'gallery' => $gallery,
@@ -208,7 +209,41 @@ function format_success_story_full($post) {
             'title' => get_the_title($next_post->ID),
             'slug' => $next_post->post_name,
         ] : null,
+        'yoast_head_json' => adwrap_get_yoast_head_json($post->ID),
     ]);
+}
+
+/**
+ * Get Yoast SEO head JSON for a post
+ */
+function adwrap_get_yoast_head_json($post_id) {
+    if (!class_exists('WPSEO_Meta')) {
+        return null;
+    }
+
+    $meta = YoastSEO()->meta->for_post($post_id);
+    if (!$meta) {
+        return null;
+    }
+
+    return [
+        'title'                  => $meta->title ?? '',
+        'description'            => $meta->description ?? '',
+        'canonical'              => $meta->canonical ?? '',
+        'og_locale'              => $meta->open_graph_locale ?? 'en_US',
+        'og_type'                => $meta->open_graph_type ?? 'article',
+        'og_title'               => $meta->open_graph_title ?? '',
+        'og_description'         => $meta->open_graph_description ?? '',
+        'og_url'                 => $meta->open_graph_url ?? '',
+        'og_site_name'           => $meta->open_graph_site_name ?? '',
+        'og_image'               => $meta->open_graph_images ?? [],
+        'article_modified_time'  => $meta->open_graph_article_modified_time ?? '',
+        'twitter_card'           => $meta->twitter_card ?? 'summary_large_image',
+        'twitter_title'          => $meta->twitter_title ?? '',
+        'twitter_description'    => $meta->twitter_description ?? '',
+        'twitter_image'          => $meta->twitter_image ?? '',
+        'schema'                 => $meta->schema ?? null,
+    ];
 }
 
 /**
