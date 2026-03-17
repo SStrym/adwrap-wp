@@ -24,13 +24,36 @@ add_action('rest_api_init', function () {
             'type' => [
                 'required' => true,
                 'validate_callback' => function ($param) {
-                    return in_array($param, ['post', 'page', 'service', 'portfolio', 'success_story', 'category', 'tag']);
+                    return in_array($param, ['post', 'page', 'service', 'portfolio', 'success_story', 'location', 'category', 'tag']);
                 }
             ],
             'identifier' => [
                 'required' => true,
                 'sanitize_callback' => 'sanitize_text_field'
             ]
+        ]
+    ]);
+
+    register_rest_route('adwrap/v1', '/seo/location/(?P<service>[a-z0-9-]+)/(?P<state>[a-z0-9-]+)/(?P<city>[a-z0-9-]+)/(?P<suburb>[a-z0-9-]+)', [
+        'methods' => 'GET',
+        'callback' => 'adwrap_get_location_seo_data',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'service' => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
+            'state'   => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
+            'city'    => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
+            'suburb'  => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
+        ]
+    ]);
+
+    register_rest_route('adwrap/v1', '/seo/location/(?P<service>[a-z0-9-]+)/(?P<state>[a-z0-9-]+)/(?P<city>[a-z0-9-]+)', [
+        'methods' => 'GET',
+        'callback' => 'adwrap_get_location_seo_data',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'service' => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
+            'state'   => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
+            'city'    => ['required' => true, 'sanitize_callback' => 'sanitize_title'],
         ]
     ]);
 
@@ -86,9 +109,43 @@ function adwrap_detect_seo_plugin() {
     return 'none';
 }
 
-/**
- * Get SEO data for a specific content item
- */
+function adwrap_get_location_seo_data(WP_REST_Request $request) {
+    $service = $request->get_param('service');
+    $state   = $request->get_param('state');
+    $city    = $request->get_param('city');
+    $suburb  = $request->get_param('suburb') ?: '';
+
+    $meta_query = [
+        'relation' => 'AND',
+        ['key' => 'service_slug', 'value' => $service, 'compare' => '='],
+        ['key' => 'state',        'value' => $state,   'compare' => '='],
+        ['key' => 'city',         'value' => $city,    'compare' => '='],
+    ];
+
+    if ($suburb) {
+        $meta_query[] = ['key' => 'suburb', 'value' => $suburb, 'compare' => '='];
+    } else {
+        $meta_query[] = [
+            'relation' => 'OR',
+            ['key' => 'suburb', 'value' => '', 'compare' => '='],
+            ['key' => 'suburb', 'compare' => 'NOT EXISTS'],
+        ];
+    }
+
+    $posts = get_posts([
+        'post_type'      => 'location',
+        'posts_per_page' => 1,
+        'post_status'    => 'publish',
+        'meta_query'     => $meta_query,
+    ]);
+
+    if (empty($posts)) {
+        return new WP_Error('not_found', 'Location not found', ['status' => 404]);
+    }
+
+    return adwrap_get_post_seo($posts[0]);
+}
+
 function adwrap_get_seo_data(WP_REST_Request $request) {
     $type = $request->get_param('type');
     $identifier = $request->get_param('identifier');
@@ -774,6 +831,7 @@ function adwrap_get_sitemap_data(WP_REST_Request $request) {
         'services' => [],
         'portfolio' => [],
         'success_stories' => [],
+        'locations' => [],
     ];
 
     // Helper to check noindex
@@ -799,6 +857,7 @@ function adwrap_get_sitemap_data(WP_REST_Request $request) {
         'services' => ['post_type' => 'service', 'priority' => 0.8],
         'portfolio' => ['post_type' => 'portfolio', 'priority' => 0.7],
         'success_stories' => ['post_type' => 'success_story', 'priority' => 0.7],
+        'locations' => ['post_type' => 'location', 'priority' => 0.8],
     ];
 
     foreach ($content_types as $key => $config) {
@@ -813,11 +872,23 @@ function adwrap_get_sitemap_data(WP_REST_Request $request) {
         foreach ($items as $item) {
             if ($is_noindex($item->ID)) continue;
 
-            $sitemap[$key][] = [
+            $entry = [
                 'slug' => $item->post_name,
                 'modified' => $item->post_modified_gmt,
                 'priority' => $item->post_name === 'home' ? 1.0 : $config['priority'],
             ];
+
+            if ($config['post_type'] === 'location') {
+                $entry['service_slug'] = get_field('service_slug', $item->ID) ?: '';
+                $entry['state']        = get_field('state', $item->ID) ?: '';
+                $entry['city']         = get_field('city', $item->ID) ?: '';
+                $suburb = get_field('suburb', $item->ID) ?: '';
+                if ($suburb) {
+                    $entry['suburb'] = $suburb;
+                }
+            }
+
+            $sitemap[$key][] = $entry;
         }
     }
 
@@ -828,7 +899,7 @@ function adwrap_get_sitemap_data(WP_REST_Request $request) {
  * Add SEO field to REST API responses
  */
 add_action('rest_api_init', function () {
-    $post_types = ['post', 'page', 'service', 'portfolio', 'success_story'];
+    $post_types = ['post', 'page', 'service', 'portfolio', 'success_story', 'location'];
     
     foreach ($post_types as $post_type) {
         register_rest_field($post_type, 'seo', [

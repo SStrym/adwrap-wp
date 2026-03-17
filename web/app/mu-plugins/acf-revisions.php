@@ -22,6 +22,7 @@ final class ACFRevisionsSupport
         'service',
         'portfolio',
         'success_story',
+        'location',
     ];
 
     private bool $debug = false;
