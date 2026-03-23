@@ -14,6 +14,8 @@ final class AdwrapLocations
         add_filter('acf/settings/load_json', [$this, 'add_acf_json_load_path']);
         add_filter('wp_insert_post_data', [$this, 'auto_generate_title'], 10, 2);
         add_action('acf/save_post', [$this, 'update_title_on_acf_save'], 15);
+        add_action('acf/save_post', [$this, 'auto_generate_slugs_on_save'], 16);
+        add_action('acf/save_post', [$this, 'auto_geocode_on_save'], 17);
     }
 
     public function add_acf_json_load_path(array $paths): array
@@ -58,6 +60,126 @@ final class AdwrapLocations
             ]);
             add_filter('wp_insert_post_data', [$this, 'auto_generate_title'], 10, 2);
         }
+    }
+
+    public function auto_generate_slugs_on_save(int $post_id): void
+    {
+        if (wp_is_post_revision($post_id) || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) {
+            return;
+        }
+
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== 'location') {
+            return;
+        }
+
+        $slug_pairs = [
+            ['label' => 'service_label', 'slug' => 'service_slug'],
+            ['label' => 'state_label',   'slug' => 'state'],
+            ['label' => 'city_label',    'slug' => 'city'],
+            ['label' => 'suburb_label',  'slug' => 'suburb'],
+        ];
+
+        foreach ($slug_pairs as $pair) {
+            $label = get_field($pair['label'], $post_id) ?: '';
+            $slug  = get_field($pair['slug'], $post_id) ?: '';
+
+            if ($label && !$slug) {
+                update_field($pair['slug'], sanitize_title($label), $post_id);
+            }
+        }
+
+        $state_label = get_field('state_label', $post_id) ?: '';
+        $state_abbr  = get_field('state_abbreviation', $post_id) ?: '';
+        if ($state_label && !$state_abbr) {
+            $abbr = $this->state_abbreviation($state_label);
+            if ($abbr) {
+                update_field('state_abbreviation', $abbr, $post_id);
+            }
+        }
+    }
+
+    public function auto_geocode_on_save(int $post_id): void
+    {
+        if (wp_is_post_revision($post_id) || (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) {
+            return;
+        }
+
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== 'location') {
+            return;
+        }
+
+        $lat = get_field('latitude', $post_id);
+        $lng = get_field('longitude', $post_id);
+        if ($lat && $lng) {
+            return;
+        }
+
+        $city   = get_field('city_label', $post_id) ?: '';
+        $state  = get_field('state_abbreviation', $post_id) ?: get_field('state_label', $post_id) ?: '';
+        $suburb = get_field('suburb_label', $post_id) ?: '';
+
+        $place = $suburb ?: $city;
+        if (!$place || !$state) {
+            return;
+        }
+
+        $coords = $this->geocode("{$place}, {$state}, USA");
+        if ($coords) {
+            update_field('latitude', $coords['lat'], $post_id);
+            update_field('longitude', $coords['lng'], $post_id);
+        }
+    }
+
+    private function geocode(string $query): ?array
+    {
+        $url = 'https://nominatim.openstreetmap.org/search?' . http_build_query([
+            'q'            => $query,
+            'format'       => 'json',
+            'limit'        => 1,
+            'countrycodes' => 'us',
+        ]);
+
+        $response = wp_remote_get($url, [
+            'headers' => ['User-Agent' => 'AdWrap-WordPress/1.0'],
+            'timeout' => 10,
+        ]);
+
+        if (is_wp_error($response)) {
+            return null;
+        }
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        if (empty($body[0]['lat']) || empty($body[0]['lon'])) {
+            return null;
+        }
+
+        return [
+            'lat' => round((float) $body[0]['lat'], 6),
+            'lng' => round((float) $body[0]['lon'], 6),
+        ];
+    }
+
+    private function state_abbreviation(string $state_name): string
+    {
+        $map = [
+            'alabama' => 'AL', 'alaska' => 'AK', 'arizona' => 'AZ', 'arkansas' => 'AR',
+            'california' => 'CA', 'colorado' => 'CO', 'connecticut' => 'CT', 'delaware' => 'DE',
+            'florida' => 'FL', 'georgia' => 'GA', 'hawaii' => 'HI', 'idaho' => 'ID',
+            'illinois' => 'IL', 'indiana' => 'IN', 'iowa' => 'IA', 'kansas' => 'KS',
+            'kentucky' => 'KY', 'louisiana' => 'LA', 'maine' => 'ME', 'maryland' => 'MD',
+            'massachusetts' => 'MA', 'michigan' => 'MI', 'minnesota' => 'MN', 'mississippi' => 'MS',
+            'missouri' => 'MO', 'montana' => 'MT', 'nebraska' => 'NE', 'nevada' => 'NV',
+            'new hampshire' => 'NH', 'new jersey' => 'NJ', 'new mexico' => 'NM', 'new york' => 'NY',
+            'north carolina' => 'NC', 'north dakota' => 'ND', 'ohio' => 'OH', 'oklahoma' => 'OK',
+            'oregon' => 'OR', 'pennsylvania' => 'PA', 'rhode island' => 'RI', 'south carolina' => 'SC',
+            'south dakota' => 'SD', 'tennessee' => 'TN', 'texas' => 'TX', 'utah' => 'UT',
+            'vermont' => 'VT', 'virginia' => 'VA', 'washington' => 'WA', 'west virginia' => 'WV',
+            'wisconsin' => 'WI', 'wyoming' => 'WY', 'district of columbia' => 'DC',
+        ];
+
+        return $map[strtolower(trim($state_name))] ?? '';
     }
 
     private function build_title_from_post(array $postarr): string

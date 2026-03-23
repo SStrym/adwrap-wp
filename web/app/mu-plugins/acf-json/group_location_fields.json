@@ -368,6 +368,72 @@
                     "min": "",
                     "max": "1"
                 },
+                "layout_vehicle_types_block": {
+                    "key": "layout_vehicle_types_block",
+                    "name": "vehicle_types_block",
+                    "label": "Vehicle Types",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_loc_vt_title",
+                            "label": "Title",
+                            "name": "title",
+                            "type": "text",
+                            "required": 0,
+                            "maxlength": 200
+                        },
+                        {
+                            "key": "field_loc_vt_desc",
+                            "label": "Description",
+                            "name": "description",
+                            "type": "textarea",
+                            "required": 0,
+                            "rows": 4
+                        },
+                        {
+                            "key": "field_loc_vt_items",
+                            "label": "Vehicle Types",
+                            "name": "items",
+                            "type": "repeater",
+                            "required": 0,
+                            "min": 0,
+                            "max": 12,
+                            "layout": "block",
+                            "button_label": "Add Vehicle Type",
+                            "sub_fields": [
+                                {
+                                    "key": "field_loc_vt_item_image",
+                                    "label": "Image",
+                                    "name": "image",
+                                    "type": "image",
+                                    "required": 0,
+                                    "return_format": "array",
+                                    "preview_size": "medium",
+                                    "library": "all",
+                                    "mime_types": "jpg, jpeg, png, webp"
+                                },
+                                {
+                                    "key": "field_loc_vt_item_title",
+                                    "label": "Title",
+                                    "name": "title",
+                                    "type": "text",
+                                    "required": 1,
+                                    "maxlength": 150
+                                },
+                                {
+                                    "key": "field_loc_vt_item_desc",
+                                    "label": "Description",
+                                    "name": "description",
+                                    "type": "textarea",
+                                    "required": 0,
+                                    "rows": 3
+                                }
+                            ]
+                        }
+                    ],
+                    "min": "",
+                    "max": "1"
+                },
                 "layout_projects_block": {
                     "key": "layout_projects_block",
                     "name": "projects_block",
