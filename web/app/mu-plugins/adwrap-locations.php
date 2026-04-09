@@ -247,8 +247,9 @@ final class AdwrapLocations
 
         $args = [
             'labels'             => $labels,
-            'public'             => false,
-            'publicly_queryable' => false,
+            'public'             => true,
+            'publicly_queryable' => true,
+            'exclude_from_search' => true,
             'show_ui'            => true,
             'show_in_menu'       => true,
             'query_var'          => false,
@@ -431,9 +432,10 @@ final class AdwrapLocations
         ]);
 
         return array_values(array_filter(array_map(function (WP_Post $post): ?array {
-            $service = get_field('service_slug', $post->ID);
-            $state   = get_field('state', $post->ID);
-            $city    = get_field('city', $post->ID);
+            $fields  = get_fields($post->ID) ?: [];
+            $service = $fields['service_slug'] ?? '';
+            $state   = $fields['state'] ?? '';
+            $city    = $fields['city'] ?? '';
 
             if (!$service || !$state || !$city) {
                 return null;
@@ -445,7 +447,7 @@ final class AdwrapLocations
                 'city'    => $city,
             ];
 
-            $suburb = get_field('suburb', $post->ID);
+            $suburb = $fields['suburb'] ?? '';
             if ($suburb) {
                 $entry['suburb'] = $suburb;
             }
@@ -456,45 +458,47 @@ final class AdwrapLocations
 
     private function format_location_card(WP_Post $post): array
     {
-        $suburb = get_field('suburb', $post->ID) ?: '';
+        $fields = get_fields($post->ID) ?: [];
+        $suburb = $fields['suburb'] ?? '';
 
         return [
             'id'                 => $post->ID,
-            'service_slug'       => get_field('service_slug', $post->ID) ?: '',
-            'service_label'      => get_field('service_label', $post->ID) ?: '',
-            'state'              => get_field('state', $post->ID) ?: '',
-            'state_label'        => get_field('state_label', $post->ID) ?: '',
-            'city'               => get_field('city', $post->ID) ?: '',
-            'city_label'         => get_field('city_label', $post->ID) ?: '',
+            'service_slug'       => $fields['service_slug'] ?? '',
+            'service_label'      => $fields['service_label'] ?? '',
+            'state'              => $fields['state'] ?? '',
+            'state_label'        => $fields['state_label'] ?? '',
+            'city'               => $fields['city'] ?? '',
+            'city_label'         => $fields['city_label'] ?? '',
             'suburb'             => $suburb,
-            'suburb_label'       => $suburb ? (get_field('suburb_label', $post->ID) ?: '') : '',
-            'state_abbreviation' => get_field('state_abbreviation', $post->ID) ?: '',
+            'suburb_label'       => $suburb ? ($fields['suburb_label'] ?? '') : '',
+            'state_abbreviation' => $fields['state_abbreviation'] ?? '',
             'featured_image'     => get_the_post_thumbnail_url($post->ID, 'medium') ?: null,
         ];
     }
 
     private function format_location_full(WP_Post $post): array
     {
-        $lat = get_field('latitude', $post->ID);
-        $lng = get_field('longitude', $post->ID);
+        $fields = get_fields($post->ID) ?: [];
+        $lat = $fields['latitude'] ?? null;
+        $lng = $fields['longitude'] ?? null;
         $coordinates = ($lat && $lng) ? ['lat' => (float) $lat, 'lng' => (float) $lng] : null;
-        $suburb = get_field('suburb', $post->ID) ?: '';
+        $suburb = $fields['suburb'] ?? '';
 
         return [
             'id'                 => $post->ID,
             'title'              => $post->post_title,
-            'service_slug'       => get_field('service_slug', $post->ID) ?: '',
-            'service_label'      => get_field('service_label', $post->ID) ?: '',
-            'state'              => get_field('state', $post->ID) ?: '',
-            'state_label'        => get_field('state_label', $post->ID) ?: '',
-            'city'               => get_field('city', $post->ID) ?: '',
-            'city_label'         => get_field('city_label', $post->ID) ?: '',
+            'service_slug'       => $fields['service_slug'] ?? '',
+            'service_label'      => $fields['service_label'] ?? '',
+            'state'              => $fields['state'] ?? '',
+            'state_label'        => $fields['state_label'] ?? '',
+            'city'               => $fields['city'] ?? '',
+            'city_label'         => $fields['city_label'] ?? '',
             'suburb'             => $suburb,
-            'suburb_label'       => $suburb ? (get_field('suburb_label', $post->ID) ?: '') : '',
-            'state_abbreviation' => get_field('state_abbreviation', $post->ID) ?: '',
+            'suburb_label'       => $suburb ? ($fields['suburb_label'] ?? '') : '',
+            'state_abbreviation' => $fields['state_abbreviation'] ?? '',
             'coordinates'        => $coordinates,
             'featured_image'     => get_the_post_thumbnail_url($post->ID, 'full') ?: null,
-            'location_blocks'    => get_field('location_blocks', $post->ID) ?: [],
+            'location_blocks'    => $fields['location_blocks'] ?? [],
             'yoast_head_json'    => function_exists('adwrap_get_post_seo') ? adwrap_get_post_seo($post) : null,
         ];
     }

@@ -139,7 +139,8 @@ final class AdwrapServices
      */
     private function format_service_card(WP_Post $post): array
     {
-        $card = get_field('card', $post->ID) ?: [];
+        $fields = get_fields($post->ID) ?: [];
+        $card = $fields['card'] ?? [];
         $thumbnail = get_the_post_thumbnail_url($post->ID, 'large');
 
         return [
@@ -161,6 +162,7 @@ final class AdwrapServices
      */
     private function format_service_full(WP_Post $post): array
     {
+        $fields = get_fields($post->ID) ?: [];
         $thumbnail = get_the_post_thumbnail_url($post->ID, 'full');
 
         return [
@@ -171,15 +173,15 @@ final class AdwrapServices
             'link'             => get_permalink($post->ID),
             'excerpt'          => $post->post_excerpt,
             'featured_image'   => $thumbnail ?: null,
-            'hero'             => get_field('hero', $post->ID) ?: [],
-            'card'             => get_field('card', $post->ID) ?: [],
-            'show_benefits'    => (bool) get_field('show_benefits', $post->ID),
-            'benefits'         => get_field('benefits', $post->ID) ?: [],
-            'show_services_list' => (bool) get_field('show_services_list', $post->ID),
-            'services_list'    => get_field('services_list', $post->ID) ?: [],
-            'content_sections' => get_field('content_sections', $post->ID) ?: [],
-            'gallery'          => get_field('gallery', $post->ID) ?: [],
-            'cta'              => get_field('cta', $post->ID) ?: [],
+            'hero'             => $fields['hero'] ?? [],
+            'card'             => $fields['card'] ?? [],
+            'show_benefits'    => (bool) ($fields['show_benefits'] ?? false),
+            'benefits'         => $fields['benefits'] ?? [],
+            'show_services_list' => (bool) ($fields['show_services_list'] ?? false),
+            'services_list'    => $fields['services_list'] ?? [],
+            'content_sections' => $fields['content_sections'] ?? [],
+            'gallery'          => $fields['gallery'] ?? [],
+            'cta'              => $fields['cta'] ?? [],
             'yoast_head_json'  => function_exists('adwrap_get_post_seo') ? adwrap_get_post_seo($post) : null,
         ];
     }

@@ -1,9 +1,10 @@
-<div id="analyst-install-modal" class="analyst-modal" style="display: none" analyst-plugin-id="<?php echo $pluginToInstall; ?>">
+<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
+<div id="analyst-install-modal" class="analyst-modal" style="display: none" analyst-plugin-id="<?php echo esc_attr( $pluginToInstall ); ?>">
 	<div class="analyst-modal-content" style="width: 450px">
 		<div class="analyst-disable-modal-mask" id="analyst-disable-install-modal-mask" style="display: none"></div>
 		<div style="display: flex">
 			<div class="analyst-install-image-block">
-				<img src="<?php echo $shieldImage; ?>"/>
+				<img src="<?php echo esc_url( $shieldImage ); ?>"/>
 			</div>
 			<div class="analyst-install-description-block">
 				<strong class="analyst-modal-header">Stay on the safe side</strong>
@@ -49,7 +50,7 @@
         method: 'POST',
         data: {
           action: 'analyst_install_' + pluginId,
-          nonce: analyst_opt_localize.nonce
+          analyst_nonce: analyst_opt_localize.analyst_nonce
         },
         success: function (data) {
 		  if (data && !data.success) {
@@ -108,7 +109,7 @@
 
 	  $.post(ajaxurl, {
       action: 'analyst_skip_install_' + pluginId,
-      nonce: analyst_opt_localize.nonce
+      analyst_nonce: analyst_opt_localize.analyst_nonce
     }).done(function () {
 		  $('#analyst-install-modal').hide()
     })

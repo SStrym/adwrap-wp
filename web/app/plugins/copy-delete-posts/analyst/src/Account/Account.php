@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Account;
 
 use Analyst\Analyst;
@@ -16,6 +17,8 @@ use Analyst\Notices\Notice;
 use Analyst\Notices\NoticeFactory;
 use Analyst\Contracts\TrackerContract;
 use Analyst\Contracts\RequestorContract;
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Class Account
@@ -218,7 +221,7 @@ class Account implements TrackerContract
       die;
     }
     
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'analyst_opt_ajax_nonce')) {
+    if (!isset($_POST['analyst_nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['analyst_nonce']), 'analyst_opt_ajax_nonce')) {
       wp_send_json_error(['message' => 'invalid_nonce']);
       die;
     }

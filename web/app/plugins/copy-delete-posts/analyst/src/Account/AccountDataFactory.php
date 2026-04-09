@@ -3,6 +3,7 @@
 namespace Account;
 
 
+use Analyst\Contracts\StorageContract;
 use Analyst\Core\AbstractFactory;
 
 /**
@@ -16,7 +17,7 @@ class AccountDataFactory extends AbstractFactory
 {
 	private static $instance;
 
-	CONST OPTIONS_KEY = 'analyst_accounts_data';
+	CONST STORAGE_KEY = 'analyst_accounts_data';
 
 	/**
 	 * @var AccountData[]
@@ -24,23 +25,48 @@ class AccountDataFactory extends AbstractFactory
 	protected $accounts = [];
 
 	/**
-	 * Read factory from options or make fresh instance
+	 * @var StorageContract
+	 */
+	private static $primaryStorage;
+
+	/**
+	 * @var StorageContract
+	 */
+	private static $secondaryStorage;
+
+	/**
+	 * Set the primary and secondary storage backends.
+	 *
+	 * @param StorageContract $primary
+	 * @param StorageContract $secondary
+	 */
+	public static function setStorageBackends(StorageContract $primary, StorageContract $secondary)
+	{
+		static::$primaryStorage = $primary;
+		static::$secondaryStorage = $secondary;
+	}
+
+	/**
+	 * Read factory from storage or make fresh instance.
+	 * Tries primary storage first, then falls back to secondary.
 	 *
 	 * @return static
 	 */
 	public static function instance()
 	{
 		if (!static::$instance) {
-			$raw = get_option(self::OPTIONS_KEY);
+			static::$instance = static::loadFromStorage(static::$primaryStorage);
 
-			// In case object is already unserialized
-			// and instance of AccountDataFactory we
-			// return it, in other case deal with
-			// serialized string data
-			if ($raw instanceof self) {
-				static::$instance = $raw;
-			} else {
-				static::$instance = is_string($raw) ? static::unserialize($raw) : new self();
+			if (!static::$instance || empty(static::$instance->accounts)) {
+				$fallback = static::loadFromStorage(static::$secondaryStorage);
+
+				if ($fallback && !empty($fallback->accounts)) {
+					static::$instance = $fallback;
+				}
+			}
+
+			if (!static::$instance) {
+				static::$instance = new self();
 			}
 		}
 
@@ -48,15 +74,48 @@ class AccountDataFactory extends AbstractFactory
 	}
 
 	/**
-	 * Sync this object data with cache
+	 * Attempt to load the factory from a storage backend.
+	 *
+	 * @param StorageContract|null $storage
+	 * @return static|null
 	 */
-	public function sync()
+	private static function loadFromStorage($storage)
 	{
-		update_option(self::OPTIONS_KEY, serialize($this));
+		if (!$storage) {
+			return null;
+		}
+
+		$raw = $storage->get(self::STORAGE_KEY);
+
+		if ($raw instanceof self) {
+			return $raw;
+		}
+
+		if (is_string($raw) && !empty($raw)) {
+			return static::unserialize($raw);
+		}
+
+		return null;
 	}
 
 	/**
-	 * Sync this instance data with cache
+	 * Persist current state to both storage backends.
+	 */
+	public function sync()
+	{
+		$serialized = serialize($this);
+
+		if (static::$primaryStorage) {
+			static::$primaryStorage->put(self::STORAGE_KEY, $serialized);
+		}
+
+		if (static::$secondaryStorage) {
+			static::$secondaryStorage->put(self::STORAGE_KEY, $serialized);
+		}
+	}
+
+	/**
+	 * Sync the singleton instance to storage.
 	 */
 	public static function syncData()
 	{

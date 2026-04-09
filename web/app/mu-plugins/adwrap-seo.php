@@ -76,37 +76,42 @@ add_action('rest_api_init', function () {
  * Detect which SEO plugin is active
  */
 function adwrap_detect_seo_plugin() {
+    static $plugin = null;
+    if ($plugin !== null) {
+        return $plugin;
+    }
+
     // Yoast SEO
     if (defined('WPSEO_VERSION') || class_exists('WPSEO_Meta')) {
-        return 'yoast';
+        return $plugin = 'yoast';
     }
-    
+
     // RankMath
     if (class_exists('RankMath') || defined('RANK_MATH_VERSION')) {
-        return 'rankmath';
+        return $plugin = 'rankmath';
     }
-    
+
     // All in One SEO
     if (defined('AIOSEO_VERSION') || class_exists('AIOSEO\\Plugin\\AIOSEO')) {
-        return 'aioseo';
+        return $plugin = 'aioseo';
     }
-    
+
     // SEOPress
     if (defined('SEOPRESS_VERSION') || function_exists('seopress_get_service')) {
-        return 'seopress';
+        return $plugin = 'seopress';
     }
-    
+
     // The SEO Framework
     if (defined('THE_SEO_FRAMEWORK_VERSION') || function_exists('the_seo_framework')) {
-        return 'seoframework';
+        return $plugin = 'seoframework';
     }
-    
+
     // Slim SEO
     if (defined('SLIM_SEO_VER') || class_exists('SlimSEO\\Plugin')) {
-        return 'slimseo';
+        return $plugin = 'slimseo';
     }
-    
-    return 'none';
+
+    return $plugin = 'none';
 }
 
 function adwrap_get_location_seo_data(WP_REST_Request $request) {
@@ -185,6 +190,9 @@ function adwrap_get_seo_data(WP_REST_Request $request) {
  * Get SEO data for a post/page/CPT
  */
 function adwrap_get_post_seo($post) {
+    // Prime meta cache in a single DB query (all subsequent get_post_meta calls hit cache)
+    update_postmeta_cache([$post->ID]);
+
     $plugin = adwrap_detect_seo_plugin();
     $site_name = get_bloginfo('name');
     

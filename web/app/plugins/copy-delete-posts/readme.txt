@@ -2,8 +2,8 @@
 Contributors: CopyDeletePosts, copydelete
 Tags: Duplicate post, Copy posts, Copy pages, Duplicate posts, Duplicate pages
 Requires at least: 4.6
-Tested up to: 6.8
-Stable tag: 1.5.0
+Tested up to: 6.9.1
+Stable tag: 1.5.3
 License: GPLv3
 Requires PHP: 5.6
 
@@ -177,6 +177,26 @@ Vietnamese: [Sao chép bài đăng, sao chép trang, sao chép bài đăng tùy 
 
 == Changelog ==
 
+= 1.5.3 =
+* [FEATURE] Add dual storage backend with file-based fallback
+
+= 1.5.2 =
+* [FEATURE] Expanded BackupBliss banner visibility to additional sites (a–e range).
+* [FIX] Updated banner dismiss function to support callback handling and improved redirect timing.
+* [FIX] Adjusted admin_init action priority for better execution order and stability.
+* [FIX] Removed version mismatch option after initialization to prevent stale state issues.
+
+= 1.5.1 =
+* Added option to take over the original slug when copying posts (original gets "-old" suffix)
+* Added option to remove all plugin settings upon uninstallation
+* [PRO] Improved license activation flow with automatic activation
+* Fixed typo in MyPopups banner URL
+* Improved backwards compatibility for taxonomy settings
+* Updated slug option description with link to additional settings
+* Improved option descriptions for better clarity
+* Added disabled button styling for better UX
+* Tested up to WordPress 6.9.1
+
 = 1.5.0 =
 * Fixed issues with mailpoet
 * Tested with WP 6.8
@@ -267,45 +287,12 @@ Vietnamese: [Sao chép bài đăng, sao chép trang, sao chép bài đăng tùy 
 = 1.3.7 =
 * Included new module
 * Fixed issues with deactivation feedback
-* Corrected display of arrow
+* [... and more ...]
 
-= 1.3.6 =
-* Adjusted PHP compatibility
-
-= 1.3.5 =
-* Added black-friday theme (only for that period)
-* Tested up to WordPress 6.1.1
-
-= 1.3.4 =
-* Improved premium plugin performance
-* Tested with final WordPress 6.1 version
-
-= 1.3.3 =
-* Tested with WordPress 6.1-RC5 + Multisite
-* Fully tested on PHP 7.4, 8.0, 8.1
-* Removed function that could cause conflicts
-
-= 1.3.2 =
-* NEW: Added automatic creation of non-existing categories for subsite duplication
-* Fixed issues with assigning taxonomy on new posts
-* Resolved issues with featured image duplication between sites
-* Tested with WordPress 6.0.2 + Multisite (PHP 8)
-
-= 1.3.1 =
-* Version fully tested with WordPress 6.0.1 + Multisite
-* Removed unnecessary debug code
-* Fixed issues with falsive attachment duplication
-* Fixed issue inside tooltip while redirect to edit screen option was enabled
-* Fixed issue while during duplication notice "Please select settings" appeared
-* Fixed issue with multi-post duplication to different subsite
-* Fixed post type restrictions, copy option won't appear in dropdown while copying is forbidden
-* Fixed corner cases where copy action button was not displayed in subsites
-* Fixed issues with backslashes and unicode characters - they should copied correctly now
-* Default WordPress Posts and Pages are not longer treated as custom posts
-[AND MORE]
+= previous =
+Old changelog has been removed due to WordPress limitation of 5000 characters.
 
 == Upgrade Notice ==
-= 1.5.0 =
-What's new in 1.5.0?
-* Fixed issues with mailpoet
-* Tested with WP 6.8
+= 1.5.3 =
+What's new in 1.5.3?
+* [FEATURE] Add dual storage backend with file-based fallback

@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 if (! function_exists('analyst_assets_path')) {
 	/**
 	 * Generates path to file in assets folder

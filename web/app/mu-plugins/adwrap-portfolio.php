@@ -360,17 +360,16 @@ final class AdwrapPortfolio
     {
         $thumbnail_id = get_post_thumbnail_id($post->ID);
         $industries = wp_get_post_terms($post->ID, 'portfolio_industry', ['fields' => 'all']);
-        
-        // Get ACF 'before' image
-        $before_image = get_field('before', $post->ID);
+
+        // Get ACF fields in one call
+        $fields = get_fields($post->ID) ?: [];
+        $before_image = $fields['before'] ?? null;
         $before_formatted = null;
-        
+
         if ($before_image) {
             if (is_array($before_image) && isset($before_image['ID'])) {
-                // ACF returns full image array
                 $before_formatted = $this->format_image((int) $before_image['ID']);
             } elseif (is_numeric($before_image)) {
-                // ACF returns image ID
                 $before_formatted = $this->format_image((int) $before_image);
             }
         }
@@ -396,11 +395,12 @@ final class AdwrapPortfolio
     {
         $thumbnail_id = get_post_thumbnail_id($post->ID);
         $industries = wp_get_post_terms($post->ID, 'portfolio_industry', ['fields' => 'all']);
-        
-        // Get ACF 'before' image
-        $before_image = get_field('before', $post->ID);
+
+        // Get all ACF fields in one call
+        $fields = get_fields($post->ID) ?: [];
+        $before_image = $fields['before'] ?? null;
         $before_formatted = null;
-        
+
         if ($before_image) {
             if (is_array($before_image) && isset($before_image['ID'])) {
                 $before_formatted = $this->format_image((int) $before_image['ID']);
@@ -408,11 +408,11 @@ final class AdwrapPortfolio
                 $before_formatted = $this->format_image((int) $before_image);
             }
         }
-        
+
         // Get gallery images
-        $gallery = get_field('gallery', $post->ID) ?: [];
+        $gallery = $fields['gallery'] ?? [];
         $formatted_gallery = [];
-        
+
         if (!empty($gallery)) {
             foreach ($gallery as $image) {
                 if (is_array($image) && isset($image['ID'])) {
@@ -435,7 +435,7 @@ final class AdwrapPortfolio
             'image'           => $this->format_image((int) $thumbnail_id),
             'gallery'         => $formatted_gallery,
             'industries'      => $this->format_terms($industries),
-            'client_name'     => get_field('client_name', $post->ID) ?: '',
+            'client_name'     => $fields['client_name'] ?? '',
             'date'            => $post->post_date,
             'yoast_head_json' => function_exists('adwrap_get_post_seo') ? adwrap_get_post_seo($post) : null,
         ];

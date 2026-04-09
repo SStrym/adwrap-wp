@@ -2,7 +2,7 @@
 
 return array(
     // The sdk version
-    'sdk' => '1.3.30',
+    'sdk' => '1.3.32',
 
     // Minimum supported WordPress version
     'wp' => '4.7',

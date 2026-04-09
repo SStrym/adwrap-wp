@@ -1,9 +1,10 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
 <div id="analyst-opt-out-modal" class="analyst-modal" style="display: none">
 	<div class="analyst-modal-content" style="width: 600px">
 		<div class="analyst-disable-modal-mask" id="analyst-disable-opt-out-modal-mask" style="display: none"></div>
 		<div style="display: flex">
 			<div class="analyst-install-image-block" style="width: 120px">
-				<img src="<?php echo $shieldImage; ?>"/>
+				<img src="<?php echo esc_url( $shieldImage ); ?>"/>
 			</div>
 			<div class="analyst-install-description-block">
 				<strong class="analyst-modal-header">By opting out, we cannot alert you anymore  in case of important security updates.</strong>
@@ -66,7 +67,7 @@
           method: 'POST',
           data: {
             action: 'analyst_opt_out_' + pluginId,
-            nonce: analyst_opt_localize.nonce
+            analyst_nonce: analyst_opt_localize.analyst_nonce
           },
           success: function (data) {
             $(self).text('Opt out')

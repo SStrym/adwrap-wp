@@ -99,6 +99,12 @@ class HeadlessWPSecurity {
     public function add_rest_api_headers($served, $result, $request, $server) {
         if (!headers_sent()) {
             header('X-Robots-Tag: noindex, nofollow', true);
+
+            // Cache-Control for adwrap API responses (consumed by Next.js ISR)
+            $route = $request->get_route();
+            if (strpos($route, '/adwrap/v1/') === 0) {
+                header('Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400', true);
+            }
         }
 
         return $served;

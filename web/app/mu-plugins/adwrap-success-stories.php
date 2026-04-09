@@ -70,10 +70,11 @@ add_action('rest_api_init', function() {
  * Format success story for card view
  */
 function format_success_story_card($post) {
-    $hero_image = get_field('hero_image', $post->ID);
-    $hero_background = get_field('hero_background', $post->ID);
+    $fields = get_fields($post->ID) ?: [];
+    $hero_image = $fields['hero_image'] ?? null;
+    $hero_background = $fields['hero_background'] ?? null;
     $thumbnail = get_post_thumbnail_id($post->ID);
-    
+
     // Use hero image or featured image
     $image = null;
     if ($hero_image) {
@@ -113,7 +114,7 @@ function format_success_story_card($post) {
     }
 
     // Format mobile background image
-    $hero_background_mobile = get_field('hero_background_mobile', $post->ID);
+    $hero_background_mobile = $fields['hero_background_mobile'] ?? null;
     $background_mobile = null;
     if ($hero_background_mobile) {
         $background_mobile = [
@@ -127,7 +128,7 @@ function format_success_story_card($post) {
     }
 
     // Get first 2 gallery images
-    $gallery = get_field('gallery', $post->ID) ?: [];
+    $gallery = $fields['gallery'] ?? [];
     $gallery_images = [];
     if (!empty($gallery)) {
         foreach (array_slice($gallery, 0, 2) as $img) {
@@ -146,14 +147,14 @@ function format_success_story_card($post) {
         'id' => $post->ID,
         'title' => get_the_title($post->ID),
         'slug' => $post->post_name,
-        'client_name' => get_field('client_name', $post->ID) ?: '',
-        'short_description' => get_field('short_description', $post->ID) ?: '',
+        'client_name' => $fields['client_name'] ?? '',
+        'short_description' => $fields['short_description'] ?? '',
         'hero_image' => $image,
         'hero_background' => $background,
         'hero_background_mobile' => $background_mobile,
-        'hero_label' => get_field('hero_label', $post->ID) ?: 'Post-Rebrand',
-        'result_percent' => get_field('result_percent', $post->ID) ?: '',
-        'result_label' => get_field('result_label', $post->ID) ?: '',
+        'hero_label' => $fields['hero_label'] ?: 'Post-Rebrand',
+        'result_percent' => $fields['result_percent'] ?? '',
+        'result_label' => $fields['result_label'] ?? '',
         'gallery_preview' => $gallery_images,
     ];
 }
@@ -163,9 +164,10 @@ function format_success_story_card($post) {
  */
 function format_success_story_full($post) {
     $card = format_success_story_card($post);
-    
+    $fields = get_fields($post->ID) ?: [];
+
     // Get stats
-    $stats_raw = get_field('stats', $post->ID);
+    $stats_raw = $fields['stats'] ?? [];
     $stats = [];
     if ($stats_raw && is_array($stats_raw)) {
         foreach ($stats_raw as $stat) {
@@ -177,7 +179,7 @@ function format_success_story_full($post) {
     }
 
     // Get gallery
-    $gallery_raw = get_field('gallery', $post->ID);
+    $gallery_raw = $fields['gallery'] ?? [];
     $gallery = [];
     if ($gallery_raw && is_array($gallery_raw)) {
         foreach ($gallery_raw as $img) {
@@ -199,7 +201,7 @@ function format_success_story_full($post) {
     return array_merge($card, [
         'status' => $post->post_status,
         'link' => get_permalink($post->ID),
-        'content' => get_field('content', $post->ID) ?: '',
+        'content' => $fields['content'] ?? '',
         'stats' => $stats,
         'gallery' => $gallery,
         'previous' => $prev_post ? [
@@ -346,14 +348,9 @@ add_action('rest_api_init', function() {
                 'post_type' => 'success_story',
                 'post_status' => 'publish',
                 'posts_per_page' => -1,
-                'fields' => 'ids',
             ]);
 
-            $slugs = [];
-            foreach ($posts as $post_id) {
-                $post = get_post($post_id);
-                $slugs[] = ['slug' => $post->post_name];
-            }
+            $slugs = array_map(fn(WP_Post $post) => ['slug' => $post->post_name], $posts);
 
             return rest_ensure_response($slugs);
         },

@@ -1,3 +1,4 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
 <script type="text/javascript">
 
   (function ($) {
@@ -15,7 +16,7 @@
         method: 'POST',
         data: {
           action: 'analyst_opt_in_' + pluginId,
-          nonce: analyst_opt_localize.nonce
+          analyst_nonce: analyst_opt_localize.analyst_nonce
         },
         success: function () {
           $('#analyst-opt-in-modal').hide()

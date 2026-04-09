@@ -3,20 +3,52 @@
 namespace Analyst\Cache;
 
 use Analyst\Contracts\CacheContract;
+use Analyst\Contracts\StorageContract;
 
 /**
  * Class DatabaseCache
+ *
+ * In-memory key-value cache that persists to dual storage backends.
  *
  * @since 1.1.5
  */
 class DatabaseCache implements CacheContract
 {
-	const OPTION_KEY = 'analyst_cache';
+	const STORAGE_KEY = 'analyst_cache';
 
 	protected static $instance;
 
 	/**
-	 * Get instance of db cache
+	 * @var StorageContract
+	 */
+	private static $primaryStorage;
+
+	/**
+	 * @var StorageContract
+	 */
+	private static $secondaryStorage;
+
+	/**
+	 * Key value pairs
+	 *
+	 * @var array
+	 */
+	protected $values = [];
+
+	/**
+	 * Set the primary and secondary storage backends.
+	 *
+	 * @param StorageContract $primary
+	 * @param StorageContract $secondary
+	 */
+	public static function setStorageBackends(StorageContract $primary, StorageContract $secondary)
+	{
+		self::$primaryStorage = $primary;
+		self::$secondaryStorage = $secondary;
+	}
+
+	/**
+	 * Get singleton instance.
 	 *
 	 * @return DatabaseCache
 	 */
@@ -30,35 +62,41 @@ class DatabaseCache implements CacheContract
 	}
 
 	/**
-	 * Key value pair
-	 *
-	 * @var array[]
-	 */
-	protected $values = [];
-
-	/**
 	 * DatabaseCache constructor.
 	 */
 	public function __construct()
 	{
-		$raw = get_option(self::OPTION_KEY, serialize([]));
+		$this->values = $this->loadValues(self::$primaryStorage);
 
-		// Raw data may be an array already
-		$this->values = is_array($raw) ? $raw : @unserialize($raw);
-
-		// In case serialization is failed
-		// make sure values is an array
-		if (!is_array($this->values)) {
-			$this->values = [];
+		if (empty($this->values)) {
+			$this->values = $this->loadValues(self::$secondaryStorage);
 		}
 	}
 
 	/**
-	 * Save value with given key
+	 * Load values from a storage backend.
+	 *
+	 * @param StorageContract|null $storage
+	 * @return array
+	 */
+	private function loadValues($storage)
+	{
+		if (!$storage) {
+			return [];
+		}
+
+		$raw = $storage->get(self::STORAGE_KEY, serialize([]));
+
+		$values = is_array($raw) ? $raw : @unserialize($raw);
+
+		return is_array($values) ? $values : [];
+	}
+
+	/**
+	 * Save value with given key.
 	 *
 	 * @param string $key
 	 * @param string $value
-	 *
 	 * @return static
 	 */
 	public function put($key, $value)
@@ -71,23 +109,21 @@ class DatabaseCache implements CacheContract
 	}
 
 	/**
-	 * Get value by given key
+	 * Get value by given key.
 	 *
-	 * @param $key
-	 *
-	 * @param null $default
-	 * @return string
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
 	 */
 	public function get($key, $default = null)
 	{
-		$value = isset($this->values[$key]) ? $this->values[$key] : $default;
-
-		return $value;
+		return isset($this->values[$key]) ? $this->values[$key] : $default;
 	}
 
 	/**
-	 * @param $key
+	 * Remove a value by key.
 	 *
+	 * @param string $key
 	 * @return static
 	 */
 	public function delete($key)
@@ -102,23 +138,31 @@ class DatabaseCache implements CacheContract
 	}
 
 	/**
-	 * Update cache in DB
+	 * Persist current values to both storage backends.
 	 */
 	protected function sync()
 	{
-		update_option(self::OPTION_KEY, serialize($this->values));
+		$serialized = serialize($this->values);
+
+		if (self::$primaryStorage) {
+			self::$primaryStorage->put(self::STORAGE_KEY, $serialized);
+		}
+
+		if (self::$secondaryStorage) {
+			self::$secondaryStorage->put(self::STORAGE_KEY, $serialized);
+		}
 	}
 
 	/**
-	 * Should get value and remove it from cache
+	 * Get a value and remove it from cache.
 	 *
-	 * @param $key
-	 * @param null $default
+	 * @param string $key
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public function pop($key, $default = null)
 	{
-		$value = $this->get($key);
+		$value = $this->get($key, $default);
 
 		$this->delete($key);
 
