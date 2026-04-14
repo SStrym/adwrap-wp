@@ -234,7 +234,7 @@ class AdwrapContactAPI {
     /**
      * Save lead to database
      */
-    private function save_lead(array $data, string $form_type = 'contact', bool $is_spam = false): int {
+    private function save_lead(array $data, string $form_type = 'contact', bool $is_spam = false, array $tracking = []): int {
         // Handle name field based on form type
         if ($form_type === 'quote') {
             $full_name = $data['full_name'] ?? '';
@@ -266,6 +266,16 @@ class AdwrapContactAPI {
             update_post_meta($post_id, '_lead_form_type', $form_type);
             update_post_meta($post_id, '_lead_ip', $this->get_client_ip());
             update_post_meta($post_id, '_lead_user_agent', $_SERVER['HTTP_USER_AGENT'] ?? '');
+
+            // Save tracking data (UTM, GCLID)
+            if (!empty($tracking)) {
+                $allowed_keys = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing_page'];
+                foreach ($allowed_keys as $key) {
+                    if (!empty($tracking[$key])) {
+                        update_post_meta($post_id, '_lead_' . $key, sanitize_text_field($tracking[$key]));
+                    }
+                }
+            }
 
             // Set status
             $status_term = $is_spam ? 'Spam' : 'New';
@@ -594,6 +604,10 @@ class AdwrapContactAPI {
                     'type' => 'string',
                     'sanitize_callback' => 'sanitize_text_field',
                 ],
+                'tracking' => [ // UTM/GCLID tracking data
+                    'required' => false,
+                    'type' => 'object',
+                ],
             ],
         ]);
 
@@ -635,6 +649,10 @@ class AdwrapContactAPI {
                     'required' => false,
                     'type' => 'string',
                     'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'tracking' => [ // UTM/GCLID tracking data
+                    'required' => false,
+                    'type' => 'object',
                 ],
             ],
         ]);
@@ -760,11 +778,17 @@ class AdwrapContactAPI {
             'source' => $request->get_param('source') ?? 'Not specified',
         ];
 
+        // Get tracking data (UTM, GCLID)
+        $tracking = $request->get_param('tracking');
+        if (!is_array($tracking)) {
+            $tracking = [];
+        }
+
         // Check for spam
         $is_spam = $this->is_spam($data);
 
         // Save lead (even if spam, for review)
-        $lead_id = $this->save_lead($data, 'contact', $is_spam);
+        $lead_id = $this->save_lead($data, 'contact', $is_spam, $tracking);
 
         // If spam, silently succeed but don't send emails
         if ($is_spam) {
@@ -794,7 +818,7 @@ class AdwrapContactAPI {
 
         try {
             // Build and send notification email
-            $html_content = $this->build_email_html($data, $lead_id);
+            $html_content = $this->build_email_html($data, $lead_id, $tracking);
 
             $resend->emails->send([
                 'from' => "$from_name <$from_email>",
@@ -831,7 +855,7 @@ class AdwrapContactAPI {
     /**
      * Build HTML email content
      */
-    private function build_email_html(array $data, int $lead_id = 0): string {
+    private function build_email_html(array $data, int $lead_id = 0, array $tracking = []): string {
         $admin_link = $lead_id ? admin_url("post.php?post={$lead_id}&action=edit") : '';
         
         $html = '
@@ -882,6 +906,7 @@ class AdwrapContactAPI {
                         <div class="label">How They Heard About Us</div>
                         <div class="value">' . esc_html($data['source']) . '</div>
                     </div>
+                    ' . $this->build_tracking_email_section($tracking) . '
                     ' . ($admin_link ? '<div class="admin-link"><a href="' . esc_url($admin_link) . '">View Lead in Admin</a></div>' : '') . '
                 </div>
                 <div class="footer">
@@ -979,8 +1004,14 @@ class AdwrapContactAPI {
             'source' => $request->get_param('source') ?? 'home_page_quote_form',
         ];
 
+        // Get tracking data (UTM, GCLID)
+        $tracking = $request->get_param('tracking');
+        if (!is_array($tracking)) {
+            $tracking = [];
+        }
+
         // Save lead
-        $lead_id = $this->save_lead($data, 'quote', false);
+        $lead_id = $this->save_lead($data, 'quote', false, $tracking);
 
         // Increment rate limit
         $this->increment_rate_limit();
@@ -1001,7 +1032,7 @@ class AdwrapContactAPI {
 
         try {
             // Build and send notification email for quote
-            $html_content = $this->build_quote_email_html($data, $lead_id);
+            $html_content = $this->build_quote_email_html($data, $lead_id, $tracking);
 
             $resend->emails->send([
                 'from' => "$from_name <$from_email>",
@@ -1041,7 +1072,7 @@ class AdwrapContactAPI {
     /**
      * Build HTML email content for quote
      */
-    private function build_quote_email_html(array $data, int $lead_id = 0): string {
+    private function build_quote_email_html(array $data, int $lead_id = 0, array $tracking = []): string {
         $admin_link = $lead_id ? admin_url("post.php?post={$lead_id}&action=edit") : '';
         
         $html = '
@@ -1089,6 +1120,7 @@ class AdwrapContactAPI {
                         <div class="label">Source</div>
                         <div class="value">' . esc_html($data['source']) . '</div>
                     </div>
+                    ' . $this->build_tracking_email_section($tracking) . '
                     ' . ($admin_link ? '<div class="admin-link"><a href="' . esc_url($admin_link) . '">View Lead in Admin</a></div>' : '') . '
                 </div>
                 <div class="footer">
@@ -1099,6 +1131,43 @@ class AdwrapContactAPI {
         </html>';
 
         return $html;
+    }
+
+    /**
+     * Build tracking/attribution section for email templates.
+     * Only renders if tracking data is present.
+     */
+    private function build_tracking_email_section(array $tracking): string {
+        if (empty($tracking)) {
+            return '';
+        }
+
+        $labels = [
+            'gclid'        => 'Google Click ID',
+            'utm_source'   => 'UTM Source',
+            'utm_medium'   => 'UTM Medium',
+            'utm_campaign' => 'UTM Campaign',
+            'utm_term'     => 'UTM Term',
+            'utm_content'  => 'UTM Content',
+            'landing_page' => 'Landing Page',
+        ];
+
+        $rows = '';
+        foreach ($labels as $key => $label) {
+            if (!empty($tracking[$key])) {
+                $rows .= '<div style="margin-bottom:4px;"><strong>' . esc_html($label) . ':</strong> ' . esc_html($tracking[$key]) . '</div>';
+            }
+        }
+
+        if (empty($rows)) {
+            return '';
+        }
+
+        return '
+                    <div class="field" style="margin-top:20px; border-top:1px solid #ddd; padding-top:15px;">
+                        <div class="label">Marketing Attribution</div>
+                        <div class="value">' . $rows . '</div>
+                    </div>';
     }
 }
 
