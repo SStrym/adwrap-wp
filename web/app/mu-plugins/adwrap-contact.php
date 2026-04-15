@@ -1215,13 +1215,7 @@ class AdwrapContactAPI {
             return new \WP_REST_Response(['error' => 'Unauthorized'], 401);
         }
 
-        // Skip test submissions in production
-        if (!empty($params['is_test'])) {
-            return new \WP_REST_Response([
-                'lead_id' => $params['lead_id'] ?? null,
-                'message' => 'Test received OK',
-            ], 200);
-        }
+        $is_test = !empty($params['is_test']);
 
         // Parse user column data
         $fields = [];
@@ -1245,6 +1239,11 @@ class AdwrapContactAPI {
 
         if (empty($email) && empty($phone)) {
             return new \WP_REST_Response(['error' => 'Missing contact info'], 400);
+        }
+
+        // Mark test leads so they're easy to identify in admin
+        if ($is_test) {
+            $first_name = '[TEST] ' . $first_name;
         }
 
         // Build lead data
