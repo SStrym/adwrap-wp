@@ -1266,6 +1266,12 @@ class AdwrapContactAPI {
         if (!empty($params['campaign_id'])) {
             $tracking['utm_campaign'] = 'google_ads_lead_form_' . $params['campaign_id'];
         }
+        if (!empty($params['adgroup_id'])) {
+            $tracking['utm_content'] = 'adgroup_' . $params['adgroup_id'];
+        }
+        if (!empty($params['creative_id'])) {
+            $tracking['utm_term'] = 'creative_' . $params['creative_id'];
+        }
         $tracking['utm_source'] = 'google';
         $tracking['utm_medium'] = 'cpc';
 
