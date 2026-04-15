@@ -19,9 +19,157 @@ class AdwrapContactAPI {
         add_action('rest_api_init', [$this, 'register_routes']);
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_menu', [$this, 'add_settings_field'], 20);
+        add_action('admin_menu', [$this, 'add_new_leads_counter'], 99);
         add_filter('manage_lead_posts_columns', [$this, 'lead_columns']);
         add_action('manage_lead_posts_custom_column', [$this, 'lead_column_content'], 10, 2);
         add_filter('manage_edit-lead_sortable_columns', [$this, 'lead_sortable_columns']);
+        add_action('add_meta_boxes', [$this, 'add_lead_meta_boxes']);
+    }
+
+    /**
+     * Add meta boxes to lead edit screen
+     */
+    public function add_lead_meta_boxes(): void {
+        add_meta_box(
+            'lead_details',
+            'Lead Details',
+            [$this, 'render_lead_details_box'],
+            'lead',
+            'normal',
+            'high'
+        );
+        add_meta_box(
+            'lead_tracking',
+            'Marketing Attribution',
+            [$this, 'render_lead_tracking_box'],
+            'lead',
+            'side',
+            'default'
+        );
+    }
+
+    /**
+     * Render lead details meta box
+     */
+    public function render_lead_details_box(\WP_Post $post): void {
+        $fields = [
+            'First Name' => get_post_meta($post->ID, '_lead_first_name', true),
+            'Last Name' => get_post_meta($post->ID, '_lead_last_name', true),
+            'Email' => get_post_meta($post->ID, '_lead_email', true),
+            'Phone' => get_post_meta($post->ID, '_lead_phone', true),
+            'Service' => get_post_meta($post->ID, '_lead_service', true),
+            'Source' => get_post_meta($post->ID, '_lead_source', true),
+            'Form Type' => get_post_meta($post->ID, '_lead_form_type', true),
+            'IP Address' => get_post_meta($post->ID, '_lead_ip', true),
+            'User Agent' => get_post_meta($post->ID, '_lead_user_agent', true),
+        ];
+
+        echo '<style>
+            .lead-details-table { width: 100%; border-collapse: collapse; }
+            .lead-details-table th { text-align: left; padding: 8px 12px; width: 140px; background: #f0f0f1; border-bottom: 1px solid #ddd; font-weight: 600; }
+            .lead-details-table td { padding: 8px 12px; border-bottom: 1px solid #eee; word-break: break-word; }
+            .lead-details-table tr:last-child th, .lead-details-table tr:last-child td { border-bottom: none; }
+            .lead-details-table a { text-decoration: none; }
+        </style>';
+
+        echo '<table class="lead-details-table">';
+        foreach ($fields as $label => $value) {
+            if (empty($value)) continue;
+            $display = esc_html($value);
+
+            // Make email/phone clickable
+            if ($label === 'Email') {
+                $display = '<a href="mailto:' . esc_attr($value) . '">' . $display . '</a>';
+            } elseif ($label === 'Phone') {
+                $display = '<a href="tel:' . esc_attr($value) . '">' . $display . '</a>';
+            } elseif ($label === 'User Agent') {
+                $display = '<code style="font-size:11px; color:#666;">' . esc_html(substr($value, 0, 150)) . '</code>';
+            }
+
+            echo '<tr><th>' . esc_html($label) . '</th><td>' . $display . '</td></tr>';
+        }
+
+        // Project description / message
+        if (!empty($post->post_content)) {
+            echo '<tr><th>Message</th><td style="white-space:pre-wrap;">' . esc_html($post->post_content) . '</td></tr>';
+        }
+
+        echo '</table>';
+    }
+
+    /**
+     * Render marketing attribution meta box
+     */
+    public function render_lead_tracking_box(\WP_Post $post): void {
+        $tracking_fields = [
+            'GCLID' => '_lead_gclid',
+            'UTM Source' => '_lead_utm_source',
+            'UTM Medium' => '_lead_utm_medium',
+            'UTM Campaign' => '_lead_utm_campaign',
+            'UTM Content' => '_lead_utm_content',
+            'UTM Term' => '_lead_utm_term',
+            'Landing Page' => '_lead_landing_page',
+        ];
+
+        $has_any = false;
+        echo '<div style="font-size: 12px;">';
+        foreach ($tracking_fields as $label => $meta_key) {
+            $value = get_post_meta($post->ID, $meta_key, true);
+            if (empty($value)) continue;
+            $has_any = true;
+            echo '<div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee;">';
+            echo '<strong style="color:#666;">' . esc_html($label) . '</strong><br>';
+            echo '<code style="word-break: break-all; font-size: 11px; background: #f0f0f1; padding: 2px 4px; display: inline-block; margin-top: 2px;">' . esc_html($value) . '</code>';
+            echo '</div>';
+        }
+        if (!$has_any) {
+            echo '<p style="color:#888; margin:0;"><em>No tracking data available.</em></p>';
+        }
+        echo '</div>';
+    }
+
+    /**
+     * Add "New" leads count bubble to admin menu
+     */
+    public function add_new_leads_counter(): void {
+        global $menu;
+        if (!is_array($menu)) {
+            return;
+        }
+
+        // Count leads with status "New"
+        $new_term = get_term_by('name', 'New', 'lead_status');
+        if (!$new_term) {
+            return;
+        }
+
+        $query = new \WP_Query([
+            'post_type' => 'lead',
+            'post_status' => 'publish',
+            'tax_query' => [[
+                'taxonomy' => 'lead_status',
+                'field' => 'term_id',
+                'terms' => $new_term->term_id,
+            ]],
+            'fields' => 'ids',
+            'no_found_rows' => false,
+            'posts_per_page' => 1,
+        ]);
+        $count = (int) $query->found_posts;
+        if ($count === 0) {
+            return;
+        }
+
+        foreach ($menu as $i => $item) {
+            if (isset($item[2]) && $item[2] === 'edit.php?post_type=lead') {
+                $menu[$i][0] = sprintf(
+                    '%s <span class="awaiting-mod"><span class="pending-count">%d</span></span>',
+                    esc_html($item[0]),
+                    $count
+                );
+                break;
+            }
+        }
     }
 
     /**
@@ -92,6 +240,8 @@ class AdwrapContactAPI {
             'service'     => 'Service',
             'form_type'   => 'Type',
             'source'      => 'Source',
+            'postal_code' => 'ZIP',
+            'gclid'       => 'GCLID',
             'taxonomy-lead_status' => 'Status',
             'date'        => 'Date',
         ];
@@ -116,11 +266,29 @@ class AdwrapContactAPI {
                 break;
             case 'form_type':
                 $form_type = get_post_meta($post_id, '_lead_form_type', true) ?: 'contact';
-                $badge_color = $form_type === 'quote' ? '#00ABB3' : '#2271b1';
+                $colors = [
+                    'quote' => '#00ABB3',
+                    'contact' => '#2271b1',
+                    'google_lead' => '#4285F4',
+                ];
+                $badge_color = $colors[$form_type] ?? '#666';
                 echo '<span style="background: ' . $badge_color . '; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase;">' . esc_html($form_type) . '</span>';
                 break;
             case 'source':
                 echo esc_html(get_post_meta($post_id, '_lead_source', true));
+                break;
+            case 'postal_code':
+                // For Google Lead Forms, postal code is in project_description
+                $post = get_post($post_id);
+                if ($post && preg_match('/Postal:\s*(\S+)/', $post->post_content, $m)) {
+                    echo esc_html($m[1]);
+                }
+                break;
+            case 'gclid':
+                $gclid = get_post_meta($post_id, '_lead_gclid', true);
+                if ($gclid) {
+                    echo '<code style="font-size: 10px; background: #f0f0f1; padding: 2px 4px;">' . esc_html(substr($gclid, 0, 12)) . '…</code>';
+                }
                 break;
         }
     }
@@ -1282,11 +1450,13 @@ class AdwrapContactAPI {
             $this->send_google_lead_notification($lead_data, $lead_id, $params);
         }
 
-        // Google expects 200 response to confirm receipt
-        return new \WP_REST_Response([
-            'lead_id' => $params['lead_id'] ?? null,
-            'wp_lead_id' => $lead_id,
+        // Google expects EXACT JSON response: {"lead_id": "<same_id>"}
+        // https://support.google.com/google-ads/answer/10400150
+        $response = new \WP_REST_Response([
+            'lead_id' => $params['lead_id'] ?? '',
         ], 200);
+        $response->header('Content-Type', 'application/json');
+        return $response;
     }
 
     /**
