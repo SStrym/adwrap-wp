@@ -670,6 +670,14 @@ class AdwrapContactAPI {
             'callback' => [$this, 'get_sources'],
             'permission_callback' => '__return_true',
         ]);
+
+        // Google Ads Lead Form webhook endpoint
+        // Receives leads submitted directly from Google Ads Lead Form Extensions
+        register_rest_route('adwrap/v1', '/google-lead', [
+            'methods' => 'POST',
+            'callback' => [$this, 'submit_google_lead'],
+            'permission_callback' => '__return_true',
+        ]);
     }
 
     /**
@@ -1168,6 +1176,167 @@ class AdwrapContactAPI {
                         <div class="label">Marketing Attribution</div>
                         <div class="value">' . $rows . '</div>
                     </div>';
+    }
+
+    /**
+     * Handle Google Ads Lead Form webhook
+     *
+     * Google sends POST with JSON body like:
+     * {
+     *   "lead_id": "xxx",
+     *   "user_column_data": [
+     *     {"column_id": "FULL_NAME", "string_value": "John Doe"},
+     *     {"column_id": "EMAIL", "string_value": "john@example.com"},
+     *     {"column_id": "PHONE_NUMBER", "string_value": "+1555..."},
+     *     {"column_id": "POSTAL_CODE", "string_value": "60143"}
+     *   ],
+     *   "google_key": "SHARED_SECRET",
+     *   "campaign_id": 23749199978,
+     *   "form_id": "...",
+     *   "is_test": false,
+     *   "gcl_id": "..."
+     * }
+     *
+     * Validates google_key against GOOGLE_LEAD_WEBHOOK_SECRET env var.
+     */
+    public function submit_google_lead(\WP_REST_Request $request) {
+        $params = $request->get_json_params();
+
+        // Verify secret key
+        $expected_key = env('GOOGLE_LEAD_WEBHOOK_SECRET') ?: get_option('google_lead_webhook_secret', '');
+        if (empty($expected_key)) {
+            error_log('[Google Lead] No webhook secret configured. Set GOOGLE_LEAD_WEBHOOK_SECRET env var.');
+            return new \WP_REST_Response(['error' => 'Webhook not configured'], 500);
+        }
+
+        $provided_key = $params['google_key'] ?? '';
+        if (!hash_equals($expected_key, $provided_key)) {
+            error_log('[Google Lead] Invalid google_key received');
+            return new \WP_REST_Response(['error' => 'Unauthorized'], 401);
+        }
+
+        // Skip test submissions in production
+        if (!empty($params['is_test'])) {
+            return new \WP_REST_Response([
+                'lead_id' => $params['lead_id'] ?? null,
+                'message' => 'Test received OK',
+            ], 200);
+        }
+
+        // Parse user column data
+        $fields = [];
+        foreach ($params['user_column_data'] ?? [] as $col) {
+            $id = $col['column_id'] ?? '';
+            $value = $col['string_value'] ?? '';
+            if ($id && $value) {
+                $fields[$id] = $value;
+            }
+        }
+
+        // Map to lead structure
+        $full_name = $fields['FULL_NAME'] ?? '';
+        $name_parts = explode(' ', $full_name, 2);
+        $first_name = $name_parts[0] ?? '';
+        $last_name = $name_parts[1] ?? '';
+
+        $email = $fields['EMAIL'] ?? '';
+        $phone = $fields['PHONE_NUMBER'] ?? '';
+        $postal = $fields['POSTAL_CODE'] ?? '';
+
+        if (empty($email) && empty($phone)) {
+            return new \WP_REST_Response(['error' => 'Missing contact info'], 400);
+        }
+
+        // Build lead data
+        $lead_data = [
+            'first_name' => sanitize_text_field($first_name),
+            'last_name' => sanitize_text_field($last_name),
+            'email' => sanitize_email($email),
+            'phone' => sanitize_text_field($phone),
+            'service' => 'Google Lead Form',
+            'project_description' => 'Submitted via Google Ads Lead Form. Postal: ' . sanitize_text_field($postal),
+            'source' => 'Google Ads',
+        ];
+
+        // Tracking data
+        $tracking = [];
+        if (!empty($params['gcl_id'])) {
+            $tracking['gclid'] = sanitize_text_field($params['gcl_id']);
+        }
+        if (!empty($params['campaign_id'])) {
+            $tracking['utm_campaign'] = 'google_ads_lead_form_' . $params['campaign_id'];
+        }
+        $tracking['utm_source'] = 'google';
+        $tracking['utm_medium'] = 'cpc';
+
+        // Save lead
+        $lead_id = $this->save_lead($lead_data, 'google_lead', false, $tracking);
+
+        // Send email notification if configured
+        if ($lead_id && !is_wp_error($lead_id)) {
+            $this->send_google_lead_notification($lead_data, $lead_id, $params);
+        }
+
+        // Google expects 200 response to confirm receipt
+        return new \WP_REST_Response([
+            'lead_id' => $params['lead_id'] ?? null,
+            'wp_lead_id' => $lead_id,
+        ], 200);
+    }
+
+    /**
+     * Send email notification for Google Lead
+     */
+    private function send_google_lead_notification(array $data, int $lead_id, array $google_params): void {
+        $recipient = get_option('contact_recipient_email', '');
+        if (empty($recipient)) {
+            return;
+        }
+
+        $from_email = get_option('contact_from_email', 'noreply@adwrapgraphics.com');
+        $from_name = get_option('contact_from_name', 'AdWrap Graphics Website');
+
+        $subject = 'NEW Google Ads Lead: ' . $data['first_name'] . ' ' . $data['last_name'];
+        $body = sprintf(
+            "New lead from Google Ads Lead Form!\n\n"
+            . "Name: %s %s\n"
+            . "Email: %s\n"
+            . "Phone: %s\n"
+            . "Google Lead ID: %s\n"
+            . "Campaign ID: %s\n"
+            . "GCLID: %s\n\n"
+            . "View in admin: %s",
+            $data['first_name'],
+            $data['last_name'],
+            $data['email'],
+            $data['phone'],
+            $google_params['lead_id'] ?? 'n/a',
+            $google_params['campaign_id'] ?? 'n/a',
+            $google_params['gcl_id'] ?? 'n/a',
+            admin_url('post.php?action=edit&post=' . $lead_id)
+        );
+
+        try {
+            if (!$this->resend) {
+                $api_key = env('RESEND_API_KEY');
+                if ($api_key) {
+                    $this->resend = new Client($api_key);
+                }
+            }
+
+            if ($this->resend) {
+                $this->resend->emails->send([
+                    'from' => $from_name . ' <' . $from_email . '>',
+                    'to' => [$recipient],
+                    'subject' => $subject,
+                    'text' => $body,
+                ]);
+            } else {
+                wp_mail($recipient, $subject, $body);
+            }
+        } catch (\Exception $e) {
+            error_log('[Google Lead] Email notification failed: ' . $e->getMessage());
+        }
     }
 }
 
