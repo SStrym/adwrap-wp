@@ -1383,6 +1383,46 @@ class AdwrapContactAPI {
             return new \WP_REST_Response(['error' => 'Unauthorized'], 401);
         }
 
+        // Build the standard OK response (Google requires exact {"lead_id": "..."}
+        // on success) so we can return it from any short-circuit point below.
+        // https://support.google.com/google-ads/answer/10400150
+        $google_lead_id = sanitize_text_field($params['lead_id'] ?? '');
+        $ok_response = new \WP_REST_Response(['lead_id' => $google_lead_id], 200);
+        $ok_response->header('Content-Type', 'application/json');
+
+        // ==================================================================
+        // IDEMPOTENCY
+        // Google retries this webhook if the response is slow (>5s) or non-200.
+        // Without dedup, each retry created a fresh lead AND sent another email
+        // — that's the "куча дублей" reported from the ad account side.
+        // Use Google's own `lead_id` as the idempotency key.
+        // ==================================================================
+        if (!empty($google_lead_id)) {
+            // 1) Fast path: already fully processed on a previous delivery.
+            $existing = get_posts([
+                'post_type'      => 'lead',
+                'post_status'    => 'any',
+                'posts_per_page' => 1,
+                'fields'         => 'ids',
+                'meta_key'       => '_lead_google_lead_id',
+                'meta_value'     => $google_lead_id,
+            ]);
+            if (!empty($existing)) {
+                error_log('[Google Lead] Duplicate webhook for lead_id=' . $google_lead_id . ' (existing post ' . $existing[0] . ') — responding 200 without reprocessing');
+                return $ok_response;
+            }
+
+            // 2) Concurrent-retry lock: catches the race where two retries arrive
+            // between save_lead() and its meta update. wp_cache_add is atomic
+            // when a persistent object cache is configured (Object Cache Pro /
+            // Redis is present on this site), so it works cross-process.
+            // Expires after 60s in case the first request crashes mid-process.
+            if (!wp_cache_add('google_lead_lock_' . $google_lead_id, 1, 'google_leads', 60)) {
+                error_log('[Google Lead] Concurrent retry for lead_id=' . $google_lead_id . ' — deduped via cache lock');
+                return $ok_response;
+            }
+        }
+
         $is_test = !empty($params['is_test']);
 
         // Parse user column data
@@ -1445,18 +1485,19 @@ class AdwrapContactAPI {
         // Save lead
         $lead_id = $this->save_lead($lead_data, 'google_lead', false, $tracking);
 
+        // Record Google's lead_id as the idempotency key for any future retries.
+        // Do this BEFORE the email so a slow SMTP send can't cause Google to
+        // retry and double-insert before the meta key is written.
+        if ($lead_id && !is_wp_error($lead_id) && !empty($google_lead_id)) {
+            update_post_meta($lead_id, '_lead_google_lead_id', $google_lead_id);
+        }
+
         // Send email notification if configured
         if ($lead_id && !is_wp_error($lead_id)) {
             $this->send_google_lead_notification($lead_data, $lead_id, $params);
         }
 
-        // Google expects EXACT JSON response: {"lead_id": "<same_id>"}
-        // https://support.google.com/google-ads/answer/10400150
-        $response = new \WP_REST_Response([
-            'lead_id' => $params['lead_id'] ?? '',
-        ], 200);
-        $response->header('Content-Type', 'application/json');
-        return $response;
+        return $ok_response;
     }
 
     /**
