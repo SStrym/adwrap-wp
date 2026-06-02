@@ -1,6 +1,7 @@
 {
     "key": "group_location_fields",
     "title": "Location Fields",
+    "modified": 1780408647,
     "fields": [
         {
             "key": "field_location_service_slug",
@@ -289,6 +290,86 @@
                         },
                         {
                             "key": "field_loc_about_image",
+                            "label": "Image",
+                            "name": "image",
+                            "type": "image",
+                            "required": 0,
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all",
+                            "mime_types": "jpg, jpeg, png, webp"
+                        }
+                    ],
+                    "min": "",
+                    "max": "1"
+                },
+                "layout_local_intro_block": {
+                    "key": "layout_local_intro_block",
+                    "name": "local_intro_block",
+                    "label": "Local Intro",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_location_localintro_eyebrow",
+                            "label": "Eyebrow",
+                            "name": "eyebrow",
+                            "type": "text",
+                            "required": 0,
+                            "instructions": "Optional small uppercase label above the heading.",
+                            "maxlength": 100,
+                            "placeholder": "WHY LOCAL"
+                        },
+                        {
+                            "key": "field_location_localintro_title",
+                            "label": "Title",
+                            "name": "title",
+                            "type": "text",
+                            "required": 0,
+                            "instructions": "Leave empty for auto-generated \"Why {City} Businesses Choose AdWrap\".",
+                            "maxlength": 200,
+                            "placeholder": "Why {{city}} Businesses Choose AdWrap"
+                        },
+                        {
+                            "key": "field_location_localintro_text",
+                            "label": "Intro Text",
+                            "name": "text",
+                            "type": "textarea",
+                            "required": 0,
+                            "instructions": "Lead paragraph(s). Separate paragraphs with a blank line.",
+                            "rows": 4
+                        },
+                        {
+                            "key": "field_location_localintro_proximity_note",
+                            "label": "Proximity Note",
+                            "name": "proximity_note",
+                            "type": "textarea",
+                            "required": 0,
+                            "instructions": "Highlighted note about your nearby location / fast scheduling.",
+                            "rows": 3
+                        },
+                        {
+                            "key": "field_location_localintro_bullets",
+                            "label": "Bullets",
+                            "name": "bullets",
+                            "type": "repeater",
+                            "required": 0,
+                            "min": 0,
+                            "max": 6,
+                            "layout": "table",
+                            "button_label": "Add Bullet",
+                            "sub_fields": [
+                                {
+                                    "key": "field_location_localintro_bullet_text",
+                                    "label": "Text",
+                                    "name": "text",
+                                    "type": "text",
+                                    "required": 1,
+                                    "maxlength": 150
+                                }
+                            ]
+                        },
+                        {
+                            "key": "field_location_localintro_image",
                             "label": "Image",
                             "name": "image",
                             "type": "image",

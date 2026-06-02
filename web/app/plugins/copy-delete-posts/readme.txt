@@ -2,8 +2,8 @@
 Contributors: CopyDeletePosts, copydelete
 Tags: Duplicate post, Copy posts, Copy pages, Duplicate posts, Duplicate pages
 Requires at least: 4.6
-Tested up to: 6.9.1
-Stable tag: 1.5.3
+Tested up to: 6.9.4
+Stable tag: 1.5.4
 License: GPLv3
 Requires PHP: 5.6
 
@@ -177,6 +177,10 @@ Vietnamese: [Sao chép bài đăng, sao chép trang, sao chép bài đăng tùy 
 
 == Changelog ==
 
+= 1.5.4 =
+* Tested up to 6.9.4
+* [FIX] Ensure review banner is hidden on excluded pages and sanitize URLs
+
 = 1.5.3 =
 * [FEATURE] Add dual storage backend with file-based fallback
 
@@ -293,6 +297,7 @@ Vietnamese: [Sao chép bài đăng, sao chép trang, sao chép bài đăng tùy 
 Old changelog has been removed due to WordPress limitation of 5000 characters.
 
 == Upgrade Notice ==
-= 1.5.3 =
-What's new in 1.5.3?
-* [FEATURE] Add dual storage backend with file-based fallback
+= 1.5.4 =
+What's new in 1.5.4?
+* Tested up to 6.9.4
+* [FIX] Ensure review banner is hidden on excluded pages and sanitize URLs

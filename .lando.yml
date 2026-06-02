@@ -29,9 +29,10 @@ services:
     type: redis:7
     portforward: true
     overrides:
-      volumes:
-        - ./docker/redis.conf:/etc/redis/redis.conf:ro
-      command: redis-server /etc/redis/redis.conf
+      # Pass tuning as CLI flags instead of a mounted config file.
+      # Single-file bind mounts are unreliable on Windows/Docker Desktop,
+      # which caused redis-server to fail with "can't open config file".
+      command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save "" --protected-mode no
   pma:
     type: phpmyadmin
     hosts:

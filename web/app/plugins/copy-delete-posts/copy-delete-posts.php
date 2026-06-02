@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Copy & Delete Posts
  * Description: The best solution to easily make duplicates of your posts & pages, and delete them in one go.
- * Version: 1.5.3
+ * Version: 1.5.4
  * Text Domain: copy-delete-posts
  * Author: Inisev
  * Author URI: https://inisev.com
@@ -31,7 +31,7 @@ analyst_init(array(
  * @since 1.0.0
  */
 // Plugin constants
-define('CDP_VERSION', '1.5.3');
+define('CDP_VERSION', '1.5.4');
 define('CDP_WP_VERSION', get_bloginfo('version'));
 define('CDP_SCRIPT_DEBUG', false);
 define('CDP_ROOT_DIR', __DIR__);

@@ -182,6 +182,8 @@ final class AdwrapServices
             'content_sections' => $fields['content_sections'] ?? [],
             'gallery'          => $fields['gallery'] ?? [],
             'cta'              => $fields['cta'] ?? [],
+            'service_areas'    => $fields['service_areas'] ?? null,
+            'faq'              => $fields['faq'] ?? [],
             'yoast_head_json'  => function_exists('adwrap_get_post_seo') ? adwrap_get_post_seo($post) : null,
         ];
     }

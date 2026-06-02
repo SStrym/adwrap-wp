@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wp-adwrap",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": [
+        "-d",
+        "ubuntu-24.04",
+        "--",
+        "bash",
+        "-ic",
+        "cd /home/strym/projects/wp-adwrap && lando start && lando logs -f -s appserver"
+      ],
+      "port": 443
+    },
+    {
+      "name": "wp-adwrap-logs",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": [
+        "-d",
+        "ubuntu-24.04",
+        "--",
+        "bash",
+        "-ic",
+        "cd /home/strym/projects/wp-adwrap && lando logs -f -s appserver"
+      ],
+      "port": 443
+    }
+  ]
+}

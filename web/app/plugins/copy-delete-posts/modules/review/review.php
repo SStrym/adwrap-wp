@@ -13,7 +13,7 @@
   namespace Inisev\Subs;
 
   // Disallow direct access
-  if (defined('ABSPATH')) {
+  if ( ! defined( 'ABSPATH' ) ) exit;
 
     /**
      * Main class for handling the Review
@@ -153,19 +153,7 @@
          */
         private function _asset($file) {
 
-          echo $this->assets_url . $file;
-
-        }
-
-        /**
-         * _dir_asset - Loads assets and automatically echo
-         *
-         * @param  string $file path relative
-         * @echo   string       absolute path
-         */
-        private function _dir_asset($file) {
-
-          echo __DIR__ . '/assets' . '/' . $file;
+          echo esc_url($this->assets_url . $file);
 
         }
 
@@ -178,8 +166,17 @@
           
           global $pagenow;
           
-          if ($pagenow == 'post.php' || $pagenow == 'profile.php' || $pagenow == 'post-new.php') {
-            return false;
+          $excluded_pages = array(
+            'post.php',
+            'post-new.php',
+            'profile.php',
+            'site-editor.php',
+            'widgets.php',
+            'customize.php'
+          );
+
+          if ( in_array( $pagenow, $excluded_pages, true ) ) {
+              return false;
           }
 
           $uid = get_current_user_id();
@@ -328,4 +325,3 @@
       }
     }
 
-  }

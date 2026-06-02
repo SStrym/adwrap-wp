@@ -34,11 +34,11 @@
     </div>
     <div class="nri-content">
       <div class="nri-text">
-        <p>You’ve been using the <a href="<?php echo $this->plugin_menu_url; ?>"><?php echo $this->name; ?></a> plugin for over <?php echo $this->days; ?> days<?php echo (($this->debug === true)?' ('.$this->minutes.' minutes)':''); ?> now – entirely <b>for FREE :)</b></p>
+        <p>You’ve been using the <a href="<?php echo esc_url($this->plugin_menu_url); ?>"><?php echo esc_html($this->name); ?></a> plugin for over <?php echo esc_html($this->days); ?> days<?php echo (($this->debug === true)?' ('.esc_html($this->minutes).' minutes)':''); ?> now – entirely <b>for FREE :)</b></p>
         <p>Don’t worry, we’re not asking you to upgrade to premium.<br class="visible-max-1300"> But maybe you can give us a nice review (if you like it)? We put a lot of effort into the free plugin, and made it feature-rich. It would motivate us a lot! Is that fair?</p>
       </div>
       <div class="nri-options-section">
-        <a href="<?php echo $this->review_url; ?>" target="_blank" class="nri-leave-review-link nri-dismiss">
+        <a href="<?php echo esc_url($this->review_url); ?>" target="_blank" class="nri-leave-review-link nri-dismiss">
           <div class="nri-option-1">
             <button class="nri-round-button">Yes, that's fair!</button>
             <svg width="185" height="34">
