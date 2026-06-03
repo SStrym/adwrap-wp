@@ -1,7 +1,7 @@
 {
     "key": "group_home_page",
     "title": "Home Page",
-    "modified": 1780480819,
+    "modified": 1780497446,
     "fields": [
         {
             "key": "field_home_hero",
@@ -124,7 +124,7 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "Vehicle Wraps \u00b7 Itasca, IL",
+            "default_value": "Vehicle Wraps · Itasca, IL",
             "maxlength": "",
             "placeholder": "",
             "prepend": "",
@@ -146,7 +146,7 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "Designed, printed, and installed in-house in Itasca, IL \u2014 premium cast vinyl that lasts 5\u20137 years, ready in 3\u20135 days.",
+            "default_value": "Designed, printed, and installed in-house in Itasca, IL — premium cast vinyl that lasts 5–7 years, ready in 3–5 days.",
             "rows": 2,
             "maxlength": "",
             "placeholder": "",
@@ -1440,6 +1440,71 @@
             "prepend": "",
             "append": "",
             "menu_order": 55
+        },
+        {
+            "key": "field_home_quote_title",
+            "label": "Quote Title",
+            "name": "quote_title",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_home_quote_subtitle",
+            "label": "Quote Subtitle",
+            "name": "quote_subtitle",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "rows": 2,
+            "default_value": "",
+            "new_lines": "",
+            "maxlength": "",
+            "placeholder": ""
+        },
+        {
+            "key": "field_home_quote_image",
+            "label": "Quote Image",
+            "name": "quote_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": 0,
+            "min_height": 0,
+            "min_size": 0,
+            "max_width": 0,
+            "max_height": 0,
+            "max_size": 0,
+            "mime_types": ""
         }
     ],
     "location": [

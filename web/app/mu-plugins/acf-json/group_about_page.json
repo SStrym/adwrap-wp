@@ -97,31 +97,6 @@
                     "media_upload": 0,
                     "default_value": "",
                     "delay": 0
-                },
-                {
-                    "key": "field_about_hero_image",
-                    "label": "Image",
-                    "name": "image",
-                    "aria-label": "",
-                    "type": "image",
-                    "instructions": "",
-                    "required": false,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0,
-                    "mime_types": ""
                 }
             ]
         },
@@ -293,11 +268,11 @@
             ]
         },
         {
-            "key": "field_about_mission",
-            "label": "Mission Section",
-            "name": "mission",
+            "key": "field_about_stats",
+            "label": "Stats Stripe",
+            "name": "stats",
             "aria-label": "",
-            "type": "group",
+            "type": "repeater",
             "instructions": "",
             "required": false,
             "conditional_logic": false,
@@ -306,15 +281,21 @@
                 "class": "",
                 "id": ""
             },
-            "layout": "block",
+            "layout": "table",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add stat",
+            "rows_per_page": 20,
             "sub_fields": [
                 {
-                    "key": "field_about_mission_title_highlight",
-                    "label": "Title Highlight",
-                    "name": "title_highlight",
+                    "key": "field_about_stats_value",
+                    "label": "Value",
+                    "name": "value",
                     "aria-label": "",
                     "type": "text",
-                    "instructions": "e.g. 'Our Mission:'",
+                    "instructions": "e.g. '200+' or '4.9★'",
                     "required": false,
                     "conditional_logic": false,
                     "wrapper": {
@@ -326,34 +307,15 @@
                     "maxlength": "",
                     "placeholder": "",
                     "prepend": "",
-                    "append": ""
+                    "append": "",
+                    "parent_repeater": "field_about_stats"
                 },
                 {
-                    "key": "field_about_mission_title",
-                    "label": "Title",
-                    "name": "title",
+                    "key": "field_about_stats_label",
+                    "label": "Label",
+                    "name": "label",
                     "aria-label": "",
                     "type": "text",
-                    "instructions": "e.g. 'Building Brands That Inspire Trust.'",
-                    "required": false,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "maxlength": "",
-                    "placeholder": "",
-                    "prepend": "",
-                    "append": ""
-                },
-                {
-                    "key": "field_about_mission_description",
-                    "label": "Description",
-                    "name": "description",
-                    "aria-label": "",
-                    "type": "textarea",
                     "instructions": "",
                     "required": false,
                     "conditional_logic": false,
@@ -362,11 +324,12 @@
                         "class": "",
                         "id": ""
                     },
-                    "rows": 4,
                     "default_value": "",
-                    "new_lines": "",
                     "maxlength": "",
-                    "placeholder": ""
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_about_stats"
                 }
             ]
         },
@@ -550,6 +513,26 @@
                     "append": ""
                 },
                 {
+                    "key": "field_about_cta_subtitle",
+                    "label": "Subtitle",
+                    "name": "subtitle",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": false,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "rows": 2,
+                    "default_value": "",
+                    "new_lines": "",
+                    "maxlength": "",
+                    "placeholder": ""
+                },
+                {
                     "key": "field_about_cta_button_text",
                     "label": "Button Text",
                     "name": "button_text",
@@ -570,11 +553,11 @@
                     "append": ""
                 },
                 {
-                    "key": "field_about_cta_button_link",
-                    "label": "Button Link",
-                    "name": "button_link",
+                    "key": "field_about_cta_phone",
+                    "label": "Phone",
+                    "name": "phone",
                     "aria-label": "",
-                    "type": "url",
+                    "type": "text",
                     "instructions": "",
                     "required": false,
                     "conditional_logic": false,
@@ -584,57 +567,10 @@
                         "id": ""
                     },
                     "default_value": "",
-                    "placeholder": ""
-                },
-                {
-                    "key": "field_about_cta_background",
-                    "label": "Background Image",
-                    "name": "background",
-                    "aria-label": "",
-                    "type": "image",
-                    "instructions": "",
-                    "required": false,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0,
-                    "mime_types": ""
-                },
-                {
-                    "key": "field_about_cta_background_mobile",
-                    "label": "Background Image Mobile",
-                    "name": "background_mobile",
-                    "aria-label": "",
-                    "type": "image",
-                    "instructions": "",
-                    "required": false,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0,
-                    "mime_types": ""
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
                 }
             ]
         }
@@ -658,5 +594,5 @@
     "description": "Fields for About Us page",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1780476179
+    "modified": 1780495627
 }

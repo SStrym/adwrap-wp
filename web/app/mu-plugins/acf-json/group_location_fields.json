@@ -1,16 +1,20 @@
 {
     "key": "group_location_fields",
     "title": "Location Fields",
-    "modified": 1780408647,
+    "modified": 1780497342,
     "fields": [
         {
             "key": "field_location_service_slug",
             "label": "Service (slug)",
             "name": "service_slug",
             "type": "text",
-            "instructions": "URL-safe service slug, e.g. \"wraps\", \"fleet-graphics\". Used in URL: /{service}/{state}/{city}",
+            "instructions": "URL-safe service slug, e.g. \"wraps\", \"fleet-graphics\". Used in URL: \/{service}\/{state}\/{city}",
             "required": 1,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "wraps"
         },
@@ -21,7 +25,11 @@
             "type": "text",
             "instructions": "Human-readable service name, e.g. \"Vehicle Wraps\", \"Fleet Graphics\"",
             "required": 1,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 150,
             "placeholder": "Vehicle Wraps"
         },
@@ -30,9 +38,13 @@
             "label": "State (slug)",
             "name": "state",
             "type": "text",
-            "instructions": "URL-safe state slug, e.g. \"illinois\". Used in URL: /{service}/{state}/{city}",
+            "instructions": "URL-safe state slug, e.g. \"illinois\". Used in URL: \/{service}\/{state}\/{city}",
             "required": 1,
-            "wrapper": { "width": "33", "class": "", "id": "" },
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "illinois"
         },
@@ -43,7 +55,11 @@
             "type": "text",
             "instructions": "Human-readable state name, e.g. \"Illinois\"",
             "required": 1,
-            "wrapper": { "width": "33", "class": "", "id": "" },
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "Illinois"
         },
@@ -54,7 +70,11 @@
             "type": "text",
             "instructions": "Two-letter abbreviation, e.g. \"IL\"",
             "required": 0,
-            "wrapper": { "width": "34", "class": "", "id": "" },
+            "wrapper": {
+                "width": "34",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 5,
             "placeholder": "IL"
         },
@@ -63,9 +83,13 @@
             "label": "City (slug)",
             "name": "city",
             "type": "text",
-            "instructions": "URL-safe city slug, e.g. \"chicago\". Used in URL: /{service}/{state}/{city}",
+            "instructions": "URL-safe city slug, e.g. \"chicago\". Used in URL: \/{service}\/{state}\/{city}",
             "required": 1,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "chicago"
         },
@@ -76,7 +100,11 @@
             "type": "text",
             "instructions": "Human-readable city name, e.g. \"Chicago\"",
             "required": 1,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "Chicago"
         },
@@ -85,9 +113,13 @@
             "label": "Suburb (slug)",
             "name": "suburb",
             "type": "text",
-            "instructions": "Optional. URL-safe suburb slug, e.g. \"itasca\". For cities within a metro area: /{service}/{state}/{city}/{suburb}",
+            "instructions": "Optional. URL-safe suburb slug, e.g. \"itasca\". For cities within a metro area: \/{service}\/{state}\/{city}\/{suburb}",
             "required": 0,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "itasca"
         },
@@ -98,7 +130,11 @@
             "type": "text",
             "instructions": "Optional. Human-readable suburb name, e.g. \"Itasca\"",
             "required": 0,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "maxlength": 100,
             "placeholder": "Itasca"
         },
@@ -109,7 +145,11 @@
             "type": "number",
             "instructions": "Decimal format, e.g. 41.9750 (right-click in Google Maps to copy). N = positive, S = negative.",
             "required": 0,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "step": "any",
             "placeholder": "41.9750"
         },
@@ -120,7 +160,11 @@
             "type": "number",
             "instructions": "Decimal format, e.g. -88.0073 (W = negative, E = positive).",
             "required": 0,
-            "wrapper": { "width": "50", "class": "", "id": "" },
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
             "step": "any",
             "placeholder": "-88.0073"
         },
@@ -255,54 +299,6 @@
                     "min": "",
                     "max": "1"
                 },
-                "layout_about_block": {
-                    "key": "layout_about_block",
-                    "name": "about_block",
-                    "label": "About",
-                    "display": "block",
-                    "sub_fields": [
-                        {
-                            "key": "field_loc_about_label",
-                            "label": "Label",
-                            "name": "label",
-                            "type": "text",
-                            "required": 0,
-                            "maxlength": 100,
-                            "placeholder": "ABOUT US"
-                        },
-                        {
-                            "key": "field_loc_about_title",
-                            "label": "Title",
-                            "name": "title",
-                            "type": "text",
-                            "required": 0,
-                            "maxlength": 200
-                        },
-                        {
-                            "key": "field_loc_about_desc",
-                            "label": "Description",
-                            "name": "description",
-                            "type": "wysiwyg",
-                            "required": 0,
-                            "tabs": "all",
-                            "toolbar": "full",
-                            "media_upload": 0
-                        },
-                        {
-                            "key": "field_loc_about_image",
-                            "label": "Image",
-                            "name": "image",
-                            "type": "image",
-                            "required": 0,
-                            "return_format": "array",
-                            "preview_size": "medium",
-                            "library": "all",
-                            "mime_types": "jpg, jpeg, png, webp"
-                        }
-                    ],
-                    "min": "",
-                    "max": "1"
-                },
                 "layout_local_intro_block": {
                     "key": "layout_local_intro_block",
                     "name": "local_intro_block",
@@ -344,7 +340,7 @@
                             "name": "proximity_note",
                             "type": "textarea",
                             "required": 0,
-                            "instructions": "Highlighted note about your nearby location / fast scheduling.",
+                            "instructions": "Highlighted note about your nearby location \/ fast scheduling.",
                             "rows": 3
                         },
                         {
@@ -383,138 +379,6 @@
                     "min": "",
                     "max": "1"
                 },
-                "layout_process_block": {
-                    "key": "layout_process_block",
-                    "name": "process_block",
-                    "label": "Creative Process",
-                    "display": "block",
-                    "sub_fields": [
-                        {
-                            "key": "field_loc_process_title",
-                            "label": "Title",
-                            "name": "title",
-                            "type": "text",
-                            "required": 0,
-                            "maxlength": 200
-                        },
-                        {
-                            "key": "field_loc_process_subtitle",
-                            "label": "Subtitle",
-                            "name": "subtitle",
-                            "type": "text",
-                            "required": 0,
-                            "maxlength": 200
-                        },
-                        {
-                            "key": "field_loc_process_items",
-                            "label": "Process Steps",
-                            "name": "items",
-                            "type": "repeater",
-                            "required": 0,
-                            "min": 0,
-                            "max": 10,
-                            "layout": "block",
-                            "button_label": "Add Step",
-                            "sub_fields": [
-                                {
-                                    "key": "field_loc_proc_icon",
-                                    "label": "Icon",
-                                    "name": "icon",
-                                    "type": "image",
-                                    "required": 0,
-                                    "return_format": "array",
-                                    "preview_size": "thumbnail",
-                                    "library": "all",
-                                    "mime_types": "jpg, jpeg, png, webp, svg"
-                                },
-                                {
-                                    "key": "field_loc_proc_title",
-                                    "label": "Title",
-                                    "name": "title",
-                                    "type": "text",
-                                    "required": 1,
-                                    "maxlength": 150
-                                },
-                                {
-                                    "key": "field_loc_proc_description",
-                                    "label": "Description",
-                                    "name": "description",
-                                    "type": "textarea",
-                                    "required": 0,
-                                    "rows": 3
-                                }
-                            ]
-                        }
-                    ],
-                    "min": "",
-                    "max": "1"
-                },
-                "layout_vehicle_types_block": {
-                    "key": "layout_vehicle_types_block",
-                    "name": "vehicle_types_block",
-                    "label": "Vehicle Types",
-                    "display": "block",
-                    "sub_fields": [
-                        {
-                            "key": "field_loc_vt_title",
-                            "label": "Title",
-                            "name": "title",
-                            "type": "text",
-                            "required": 0,
-                            "maxlength": 200
-                        },
-                        {
-                            "key": "field_loc_vt_desc",
-                            "label": "Description",
-                            "name": "description",
-                            "type": "textarea",
-                            "required": 0,
-                            "rows": 4
-                        },
-                        {
-                            "key": "field_loc_vt_items",
-                            "label": "Vehicle Types",
-                            "name": "items",
-                            "type": "repeater",
-                            "required": 0,
-                            "min": 0,
-                            "max": 12,
-                            "layout": "block",
-                            "button_label": "Add Vehicle Type",
-                            "sub_fields": [
-                                {
-                                    "key": "field_loc_vt_item_image",
-                                    "label": "Image",
-                                    "name": "image",
-                                    "type": "image",
-                                    "required": 0,
-                                    "return_format": "array",
-                                    "preview_size": "medium",
-                                    "library": "all",
-                                    "mime_types": "jpg, jpeg, png, webp"
-                                },
-                                {
-                                    "key": "field_loc_vt_item_title",
-                                    "label": "Title",
-                                    "name": "title",
-                                    "type": "text",
-                                    "required": 1,
-                                    "maxlength": 150
-                                },
-                                {
-                                    "key": "field_loc_vt_item_desc",
-                                    "label": "Description",
-                                    "name": "description",
-                                    "type": "textarea",
-                                    "required": 0,
-                                    "rows": 3
-                                }
-                            ]
-                        }
-                    ],
-                    "min": "",
-                    "max": "1"
-                },
                 "layout_projects_block": {
                     "key": "layout_projects_block",
                     "name": "projects_block",
@@ -543,37 +407,15 @@
                             "name": "portfolio_ids",
                             "type": "relationship",
                             "required": 0,
-                            "post_type": ["portfolio"],
-                            "filters": ["search"],
+                            "post_type": [
+                                "portfolio"
+                            ],
+                            "filters": [
+                                "search"
+                            ],
                             "return_format": "id",
                             "min": 0,
                             "max": 20
-                        }
-                    ],
-                    "min": "",
-                    "max": "1"
-                },
-                "layout_reviews_block": {
-                    "key": "layout_reviews_block",
-                    "name": "reviews_block",
-                    "label": "Reviews",
-                    "display": "block",
-                    "sub_fields": [
-                        {
-                            "key": "field_loc_reviews_title",
-                            "label": "Title",
-                            "name": "title",
-                            "type": "text",
-                            "required": 0,
-                            "maxlength": 200
-                        },
-                        {
-                            "key": "field_loc_reviews_desc",
-                            "label": "Description",
-                            "name": "description",
-                            "type": "textarea",
-                            "required": 0,
-                            "rows": 3
                         }
                     ],
                     "min": "",

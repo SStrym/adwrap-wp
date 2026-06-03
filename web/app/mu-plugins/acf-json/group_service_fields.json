@@ -243,6 +243,26 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": ""
+                },
+                {
+                    "key": "field_service_hero_phone",
+                    "label": "Hero Phone",
+                    "name": "hero_phone",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": false,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
                 }
             ]
         },
@@ -2137,7 +2157,7 @@
                                     "name": "link",
                                     "aria-label": "",
                                     "type": "url",
-                                    "instructions": "Optional link \u2014 makes the card clickable",
+                                    "instructions": "Optional link — makes the card clickable",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2277,7 +2297,7 @@
                                     "name": "value",
                                     "aria-label": "",
                                     "type": "text",
-                                    "instructions": "Big highlighted value (e.g. 5\u20137 yrs, 100%)",
+                                    "instructions": "Big highlighted value (e.g. 5–7 yrs, 100%)",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2454,7 +2474,7 @@
                                     "name": "value",
                                     "aria-label": "",
                                     "type": "text",
-                                    "instructions": "Right-hand value (e.g. Full \u00b7 \u00be \u00b7 Partial \u00b7 Spot graphics)",
+                                    "instructions": "Right-hand value (e.g. Full · ¾ · Partial · Spot graphics)",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2636,7 +2656,7 @@
                                     "name": "link",
                                     "aria-label": "",
                                     "type": "url",
-                                    "instructions": "Optional link \u2014 adds a 'Learn more \u2192' and makes the card clickable",
+                                    "instructions": "Optional link — adds a 'Learn more →' and makes the card clickable",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2687,6 +2707,86 @@
             "max_size": 0
         },
         {
+            "key": "field_service_gallery_eyebrow",
+            "label": "Gallery Eyebrow",
+            "name": "gallery_eyebrow",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_service_gallery_title",
+            "label": "Gallery Title",
+            "name": "gallery_title",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_service_faq_eyebrow",
+            "label": "FAQ Eyebrow",
+            "name": "faq_eyebrow",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_service_faq_title",
+            "label": "FAQ Title",
+            "name": "faq_title",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
             "key": "field_service_cta",
             "label": "CTA Section",
             "name": "cta",
@@ -2703,111 +2803,84 @@
             "layout": "block",
             "sub_fields": [
                 {
-                    "key": "field_cta_title",
+                    "key": "field_service_cta_title",
                     "label": "Title",
                     "name": "title",
                     "aria-label": "",
                     "type": "text",
-                    "instructions": "CTA section title",
-                    "required": 0,
+                    "instructions": "",
+                    "required": false,
                     "conditional_logic": false,
                     "wrapper": {
                         "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "Ready to Transform Your Business Look?",
-                    "maxlength": "",
-                    "placeholder": "",
-                    "prepend": "",
-                    "append": ""
-                },
-                {
-                    "key": "field_cta_button_text",
-                    "label": "Button Text",
-                    "name": "button_text",
-                    "aria-label": "",
-                    "type": "text",
-                    "instructions": "CTA button text",
-                    "required": 0,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "GO AHEAD",
-                    "maxlength": "",
-                    "placeholder": "",
-                    "prepend": "",
-                    "append": ""
-                },
-                {
-                    "key": "field_cta_button_link",
-                    "label": "Button Link",
-                    "name": "button_link",
-                    "aria-label": "",
-                    "type": "url",
-                    "instructions": "CTA button URL",
-                    "required": 0,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "50",
                         "class": "",
                         "id": ""
                     },
                     "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_service_cta_subtitle",
+                    "label": "Subtitle",
+                    "name": "subtitle",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": false,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "rows": 2,
+                    "default_value": "",
+                    "new_lines": "",
+                    "maxlength": "",
                     "placeholder": ""
                 },
                 {
-                    "key": "field_cta_background",
-                    "label": "Background Image",
-                    "name": "background",
+                    "key": "field_service_cta_button_text",
+                    "label": "Button Text",
+                    "name": "button_text",
                     "aria-label": "",
-                    "type": "image",
-                    "instructions": "Desktop background image for CTA section",
-                    "required": 0,
+                    "type": "text",
+                    "instructions": "",
+                    "required": false,
                     "conditional_logic": false,
                     "wrapper": {
-                        "width": "50",
+                        "width": "",
                         "class": "",
                         "id": ""
                     },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "mime_types": "jpg, jpeg, png, webp",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
                 },
                 {
-                    "key": "field_cta_background_mobile",
-                    "label": "Background Image (Mobile)",
-                    "name": "background_mobile",
+                    "key": "field_service_cta_phone",
+                    "label": "Phone",
+                    "name": "phone",
                     "aria-label": "",
-                    "type": "image",
-                    "instructions": "Mobile background image for CTA section",
-                    "required": 0,
+                    "type": "text",
+                    "instructions": "",
+                    "required": false,
                     "conditional_logic": false,
                     "wrapper": {
-                        "width": "50",
+                        "width": "",
                         "class": "",
                         "id": ""
                     },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "mime_types": "jpg, jpeg, png, webp",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": ""
                 }
             ]
         }
@@ -2831,5 +2904,5 @@
     "description": "Fields for the Service custom post type",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1780476179
+    "modified": 1780499290
 }

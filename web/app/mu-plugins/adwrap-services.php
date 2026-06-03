@@ -181,9 +181,13 @@ final class AdwrapServices
             'services_list'    => $fields['services_list'] ?? [],
             'content_sections' => $fields['content_sections'] ?? [],
             'gallery'          => $fields['gallery'] ?? [],
+            'gallery_eyebrow'  => $fields['gallery_eyebrow'] ?? '',
+            'gallery_title'    => $fields['gallery_title'] ?? '',
             'cta'              => $fields['cta'] ?? [],
             'service_areas'    => $fields['service_areas'] ?? null,
             'faq'              => $fields['faq'] ?? [],
+            'faq_eyebrow'      => $fields['faq_eyebrow'] ?? '',
+            'faq_title'        => $fields['faq_title'] ?? '',
             'yoast_head_json'  => function_exists('adwrap_get_post_seo') ? adwrap_get_post_seo($post) : null,
         ];
     }

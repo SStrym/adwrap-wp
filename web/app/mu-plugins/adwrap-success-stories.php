@@ -194,9 +194,15 @@ function format_success_story_full($post) {
         }
     }
 
-    // Get adjacent posts
-    $prev_post = get_adjacent_post(false, '', true, 'category');
-    $next_post = get_adjacent_post(false, '', false, 'category');
+    // Get adjacent posts (date-adjacent within the success_story CPT).
+    // get_adjacent_post() relies on the global $post, which isn't set in a REST
+    // context — establish it first. in_same_term=false → no taxonomy needed
+    // (the CPT registers none), so neighbours are found by date.
+    $GLOBALS['post'] = $post;
+    setup_postdata($post);
+    $prev_post = get_adjacent_post(false, '', true, '');
+    $next_post = get_adjacent_post(false, '', false, '');
+    wp_reset_postdata();
 
     return array_merge($card, [
         'status' => $post->post_status,

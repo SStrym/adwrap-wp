@@ -34,6 +34,8 @@ function adwrap_redesign_register_fields(): void
                 ['key' => 'field_adw_svc_sa_eyebrow', 'label' => 'Eyebrow', 'name' => 'eyebrow', 'type' => 'text', 'default_value' => 'Service areas'],
                 ['key' => 'field_adw_svc_sa_title', 'label' => 'Title', 'name' => 'title', 'type' => 'text'],
                 ['key' => 'field_adw_svc_sa_desc', 'label' => 'Description', 'name' => 'description', 'type' => 'textarea', 'rows' => 2],
+                ['key' => 'field_adw_svc_sa_cta_label', 'label' => 'CTA Label', 'name' => 'cta_label', 'type' => 'text'],
+                ['key' => 'field_adw_svc_sa_note', 'label' => 'Closing Note', 'name' => 'note', 'type' => 'text'],
             ]],
             ['key' => 'field_adw_svc_faq', 'label' => 'FAQ', 'name' => 'faq', 'type' => 'repeater', 'layout' => 'block', 'button_label' => 'Add question', 'sub_fields' => [
                 ['key' => 'field_adw_svc_faq_q', 'label' => 'Question', 'name' => 'question', 'type' => 'text'],

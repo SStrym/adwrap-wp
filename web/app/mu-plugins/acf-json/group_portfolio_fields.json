@@ -23,6 +23,31 @@
             "maxlength": ""
         },
         {
+            "key": "field_portfolio_before",
+            "label": "Before Image",
+            "name": "before",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Optional. Shown first; the featured image becomes the \"after\" on hover.",
+            "required": 0,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": 0,
+            "min_height": 0,
+            "min_size": 0,
+            "max_width": 0,
+            "max_height": 0,
+            "max_size": 0,
+            "mime_types": ""
+        },
+        {
             "key": "field_portfolio_gallery",
             "label": "Gallery",
             "name": "gallery",
@@ -70,5 +95,5 @@
     "description": "Fields for Portfolio custom post type",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1765101930
+    "modified": 1780496718
 }

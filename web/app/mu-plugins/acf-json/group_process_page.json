@@ -296,6 +296,53 @@
                     "maxlength": "",
                     "placeholder": "",
                     "parent_repeater": "field_process_steps"
+                },
+                {
+                    "key": "field_process_step_image",
+                    "label": "Step Image",
+                    "name": "step_image",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Optional photo shown on the step card.",
+                    "required": false,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all",
+                    "min_width": 0,
+                    "min_height": 0,
+                    "min_size": 0,
+                    "max_width": 0,
+                    "max_height": 0,
+                    "max_size": 0,
+                    "mime_types": "",
+                    "parent_repeater": "field_process_steps"
+                },
+                {
+                    "key": "field_process_step_day",
+                    "label": "Timeline Label",
+                    "name": "step_day",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "Optional, e.g. 'Day 1'.",
+                    "required": false,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_process_steps"
                 }
             ]
         },
@@ -555,5 +602,5 @@
     "description": "Fields for the Process page",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1780475539
+    "modified": 1780496718
 }
