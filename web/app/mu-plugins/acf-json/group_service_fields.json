@@ -193,7 +193,7 @@
                     "name": "hero_button_link",
                     "aria-label": "",
                     "type": "url",
-                    "instructions": "Primary CTA button URL (default: /contact-us)",
+                    "instructions": "Primary CTA button URL (default: \/contact-us)",
                     "required": 0,
                     "conditional_logic": false,
                     "wrapper": {
@@ -608,7 +608,7 @@
                             "name": "button_link",
                             "aria-label": "",
                             "type": "url",
-                            "instructions": "Button URL (e.g. /contact or service page URL)",
+                            "instructions": "Button URL (e.g. \/contact or service page URL)",
                             "required": 0,
                             "conditional_logic": false,
                             "wrapper": {
@@ -869,124 +869,6 @@
                     "max": ""
                 },
                 {
-                    "key": "layout_sub_services",
-                    "name": "sub_services",
-                    "label": "Sub-Services Grid",
-                    "display": "block",
-                    "sub_fields": [
-                        {
-                            "key": "field_ss_title",
-                            "label": "Section Title",
-                            "name": "section_title",
-                            "aria-label": "",
-                            "type": "text",
-                            "instructions": "Title for this section",
-                            "required": 0,
-                            "conditional_logic": false,
-                            "wrapper": {
-                                "width": "",
-                                "class": "",
-                                "id": ""
-                            },
-                            "default_value": "",
-                            "maxlength": "",
-                            "placeholder": "",
-                            "prepend": "",
-                            "append": ""
-                        },
-                        {
-                            "key": "field_ss_items",
-                            "label": "Items",
-                            "name": "items",
-                            "aria-label": "",
-                            "type": "repeater",
-                            "instructions": "Add sub-service items (recommended: 6 items)",
-                            "required": 0,
-                            "conditional_logic": false,
-                            "wrapper": {
-                                "width": "",
-                                "class": "",
-                                "id": ""
-                            },
-                            "min": 0,
-                            "max": 12,
-                            "layout": "table",
-                            "button_label": "Add Item",
-                            "rows_per_page": 20,
-                            "collapsed": "",
-                            "sub_fields": [
-                                {
-                                    "key": "field_ss_item_icon",
-                                    "label": "Icon",
-                                    "name": "icon",
-                                    "aria-label": "",
-                                    "type": "image",
-                                    "instructions": "",
-                                    "required": 0,
-                                    "conditional_logic": false,
-                                    "wrapper": {
-                                        "width": "",
-                                        "class": "",
-                                        "id": ""
-                                    },
-                                    "return_format": "array",
-                                    "preview_size": "thumbnail",
-                                    "library": "all",
-                                    "min_width": 0,
-                                    "min_height": 0,
-                                    "min_size": 0,
-                                    "max_width": 0,
-                                    "max_height": 0,
-                                    "max_size": 0,
-                                    "mime_types": "",
-                                    "parent_repeater": "field_ss_items"
-                                },
-                                {
-                                    "key": "field_ss_item_title",
-                                    "label": "Title",
-                                    "name": "title",
-                                    "aria-label": "",
-                                    "type": "text",
-                                    "instructions": "",
-                                    "required": 0,
-                                    "conditional_logic": false,
-                                    "wrapper": {
-                                        "width": "",
-                                        "class": "",
-                                        "id": ""
-                                    },
-                                    "default_value": "",
-                                    "maxlength": "",
-                                    "placeholder": "",
-                                    "prepend": "",
-                                    "append": "",
-                                    "parent_repeater": "field_ss_items"
-                                },
-                                {
-                                    "key": "field_ss_item_link",
-                                    "label": "Link",
-                                    "name": "link",
-                                    "aria-label": "",
-                                    "type": "url",
-                                    "instructions": "",
-                                    "required": 0,
-                                    "conditional_logic": false,
-                                    "wrapper": {
-                                        "width": "",
-                                        "class": "",
-                                        "id": ""
-                                    },
-                                    "default_value": "",
-                                    "placeholder": "",
-                                    "parent_repeater": "field_ss_items"
-                                }
-                            ]
-                        }
-                    ],
-                    "min": "",
-                    "max": ""
-                },
-                {
                     "key": "layout_features_grid",
                     "name": "features_grid",
                     "label": "Features Grid",
@@ -1018,7 +900,7 @@
                             "name": "section_title",
                             "aria-label": "",
                             "type": "text",
-                            "instructions": "Second part of title in dark/white color",
+                            "instructions": "Second part of title in dark\/white color",
                             "required": 0,
                             "conditional_logic": false,
                             "wrapper": {
@@ -1598,7 +1480,7 @@
                                     "name": "answer",
                                     "aria-label": "",
                                     "type": "wysiwyg",
-                                    "instructions": "Use bold text for labels (e.g. <strong>Concepts.</strong>)",
+                                    "instructions": "Use bold text for labels (e.g. <strong>Concepts.<\/strong>)",
                                     "required": 1,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2255,7 +2137,7 @@
                                     "name": "link",
                                     "aria-label": "",
                                     "type": "url",
-                                    "instructions": "Optional link — makes the card clickable",
+                                    "instructions": "Optional link \u2014 makes the card clickable",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2395,7 +2277,7 @@
                                     "name": "value",
                                     "aria-label": "",
                                     "type": "text",
-                                    "instructions": "Big highlighted value (e.g. 5–7 yrs, 100%)",
+                                    "instructions": "Big highlighted value (e.g. 5\u20137 yrs, 100%)",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2461,7 +2343,7 @@
                 {
                     "key": "layout_spec_list",
                     "name": "spec_list",
-                    "label": "Spec List (Specs / Stack Table)",
+                    "label": "Spec List (Specs \/ Stack Table)",
                     "display": "block",
                     "sub_fields": [
                         {
@@ -2572,7 +2454,7 @@
                                     "name": "value",
                                     "aria-label": "",
                                     "type": "text",
-                                    "instructions": "Right-hand value (e.g. Full · ¾ · Partial · Spot graphics)",
+                                    "instructions": "Right-hand value (e.g. Full \u00b7 \u00be \u00b7 Partial \u00b7 Spot graphics)",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2754,7 +2636,7 @@
                                     "name": "link",
                                     "aria-label": "",
                                     "type": "url",
-                                    "instructions": "Optional link — adds a 'Learn more →' and makes the card clickable",
+                                    "instructions": "Optional link \u2014 adds a 'Learn more \u2192' and makes the card clickable",
                                     "required": 0,
                                     "conditional_logic": false,
                                     "wrapper": {
@@ -2782,7 +2664,7 @@
             "name": "gallery",
             "aria-label": "",
             "type": "gallery",
-            "instructions": "Add images for the gallery/slider section",
+            "instructions": "Add images for the gallery\/slider section",
             "required": 0,
             "conditional_logic": false,
             "wrapper": {
@@ -2949,5 +2831,5 @@
     "description": "Fields for the Service custom post type",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1780408647
+    "modified": 1780476179
 }

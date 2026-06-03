@@ -24,52 +24,6 @@ function adwrap_redesign_register_fields(): void
         return;
     }
 
-    // --- Home page: redesign block content ---
-    acf_add_local_field_group([
-        'key'    => 'group_adwrap_home_redesign',
-        'title'  => 'Home — Redesign Blocks (2026)',
-        'fields' => [
-            // Hero fields now live in group_home_page.json (ACF Local JSON) — kept out of here to avoid duplicate field groups on the home page.
-
-            ['key' => 'field_adw_trust_items', 'label' => 'Trust items', 'name' => 'trust_items', 'type' => 'repeater', 'layout' => 'table', 'sub_fields' => [
-                ['key' => 'field_adw_trust_label', 'label' => 'Label', 'name' => 'label', 'type' => 'text'],
-            ]],
-
-            ['key' => 'field_adw_stats_items', 'label' => 'Stats items', 'name' => 'stats_items', 'type' => 'repeater', 'layout' => 'table', 'sub_fields' => [
-                ['key' => 'field_adw_stat_value', 'label' => 'Value', 'name' => 'value', 'type' => 'text'],
-                ['key' => 'field_adw_stat_label', 'label' => 'Label', 'name' => 'label', 'type' => 'text'],
-            ]],
-
-            ['key' => 'field_adw_process_eyebrow', 'label' => 'Process eyebrow', 'name' => 'process_eyebrow', 'type' => 'text'],
-            ['key' => 'field_adw_process_title', 'label' => 'Process title', 'name' => 'process_title', 'type' => 'text'],
-            ['key' => 'field_adw_process_steps', 'label' => 'Process steps', 'name' => 'process_steps', 'type' => 'repeater', 'layout' => 'table', 'sub_fields' => [
-                ['key' => 'field_adw_step_number', 'label' => 'Number', 'name' => 'step_number', 'type' => 'text'],
-                ['key' => 'field_adw_step_title', 'label' => 'Title', 'name' => 'step_title', 'type' => 'text'],
-                ['key' => 'field_adw_step_desc', 'label' => 'Description', 'name' => 'step_desc', 'type' => 'textarea', 'rows' => 2],
-            ]],
-
-            ['key' => 'field_adw_services_eyebrow', 'label' => 'Services eyebrow', 'name' => 'services_eyebrow', 'type' => 'text'],
-            ['key' => 'field_adw_services_title', 'label' => 'Services title', 'name' => 'services_title', 'type' => 'text'],
-            ['key' => 'field_adw_services_subtitle', 'label' => 'Services subtitle', 'name' => 'services_subtitle', 'type' => 'textarea', 'rows' => 2],
-
-            ['key' => 'field_adw_sa_eyebrow', 'label' => 'Service Areas eyebrow', 'name' => 'service_areas_eyebrow', 'type' => 'text'],
-            ['key' => 'field_adw_sa_title', 'label' => 'Service Areas title', 'name' => 'service_areas_title', 'type' => 'text'],
-            ['key' => 'field_adw_sa_desc', 'label' => 'Service Areas description', 'name' => 'service_areas_description', 'type' => 'textarea', 'rows' => 2],
-            ['key' => 'field_adw_sa_service', 'label' => 'Service Areas service slug', 'name' => 'service_areas_service', 'type' => 'text', 'default_value' => 'vehicle-wraps'],
-
-            ['key' => 'field_adw_cta_title', 'label' => 'CTA title', 'name' => 'cta_title', 'type' => 'text'],
-            ['key' => 'field_adw_cta_subtitle', 'label' => 'CTA subtitle', 'name' => 'cta_subtitle', 'type' => 'textarea', 'rows' => 2],
-            ['key' => 'field_adw_cta_btn_label', 'label' => 'CTA button label', 'name' => 'cta_button_label', 'type' => 'text'],
-            ['key' => 'field_adw_cta_btn_link', 'label' => 'CTA button link', 'name' => 'cta_button_link', 'type' => 'text'],
-            ['key' => 'field_adw_cta_phone', 'label' => 'CTA phone', 'name' => 'cta_phone', 'type' => 'text'],
-        ],
-        'location' => [
-            [['param' => 'post_type', 'operator' => '==', 'value' => 'page']],
-        ],
-        'menu_order'   => 5,
-        'show_in_rest' => 1,
-    ]);
-
     // --- Service post type: Service Areas (local SEO) block ---
     acf_add_local_field_group([
         'key'    => 'group_adwrap_service_areas',

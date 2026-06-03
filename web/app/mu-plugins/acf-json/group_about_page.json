@@ -447,56 +447,6 @@
                     "append": ""
                 },
                 {
-                    "key": "field_about_values_image_left",
-                    "label": "Image Left",
-                    "name": "image_left",
-                    "aria-label": "",
-                    "type": "image",
-                    "instructions": "",
-                    "required": false,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0,
-                    "mime_types": ""
-                },
-                {
-                    "key": "field_about_values_image_right",
-                    "label": "Image Right",
-                    "name": "image_right",
-                    "aria-label": "",
-                    "type": "image",
-                    "instructions": "",
-                    "required": false,
-                    "conditional_logic": false,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0,
-                    "mime_types": ""
-                },
-                {
                     "key": "field_about_values_items",
                     "label": "Values",
                     "name": "items",
@@ -692,12 +642,7 @@
     "location": [
         [
             {
-                "param": "page_template",
-                "operator": "==",
-                "value": "default"
-            },
-            {
-                "param": "page",
+                "param": "page_slug",
                 "operator": "==",
                 "value": "about-us"
             }
@@ -713,5 +658,5 @@
     "description": "Fields for About Us page",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1780408647
+    "modified": 1780476179
 }

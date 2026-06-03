@@ -329,9 +329,9 @@
     "location": [
         [
             {
-                "param": "page",
+                "param": "page_slug",
                 "operator": "==",
-                "value": "279"
+                "value": "portfolio"
             }
         ]
     ],
@@ -345,5 +345,5 @@
     "description": "Fields for Portfolio listing page",
     "show_in_rest": 1,
     "display_title": "",
-    "modified": 1765101981
+    "modified": 1780475539
 }

@@ -156,7 +156,7 @@
                     "label": "Button Link",
                     "name": "button_link",
                     "type": "text",
-                    "default_value": "/contact-us"
+                    "default_value": "\/contact-us"
                 },
                 {
                     "key": "field_ss_page_cta_background",
@@ -180,19 +180,7 @@
     "location": [
         [
             {
-                "param": "page",
-                "operator": "==",
-                "value": "success-stories"
-            }
-        ],
-        [
-            {
-                "param": "page_template",
-                "operator": "==",
-                "value": "default"
-            },
-            {
-                "param": "post",
+                "param": "page_slug",
                 "operator": "==",
                 "value": "success-stories"
             }
@@ -204,6 +192,6 @@
     "label_placement": "top",
     "instruction_placement": "label",
     "active": true,
-    "show_in_rest": true
+    "show_in_rest": true,
+    "modified": 1780475539
 }
-
