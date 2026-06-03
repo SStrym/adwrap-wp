@@ -53,7 +53,7 @@ final class AdwrapPortfolio
             'hierarchical'       => false,
             'menu_position'      => 6,
             'menu_icon'          => 'dashicons-images-alt2',
-            'supports'           => ['title', 'thumbnail', 'excerpt', 'page-attributes', 'revisions'],
+            'supports'           => ['title', 'editor', 'thumbnail', 'excerpt', 'page-attributes', 'revisions'],
             'show_in_rest'       => true,
             'rest_base'          => 'portfolio',
         ];
