@@ -1,7 +1,7 @@
 {
     "key": "group_home_page",
     "title": "Home Page",
-    "modified": 1780477358,
+    "modified": 1780480819,
     "fields": [
         {
             "key": "field_home_hero",
@@ -1458,5 +1458,6 @@
     "instruction_placement": "label",
     "hide_on_screen": "",
     "active": true,
-    "description": "Fields for the Home page."
+    "description": "Fields for the Home page.",
+    "show_in_rest": 1
 }
