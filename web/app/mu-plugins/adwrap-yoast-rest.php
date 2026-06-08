@@ -15,16 +15,32 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * The custom CPTs aren't registered with 'custom-fields' support, so the core
+ * REST controller omits the `meta` field entirely and the Yoast meta can't be
+ * written via wp/v2. Inject the support during registration via the
+ * register_post_type_args filter - this is order-independent (works no matter
+ * when the CPT plugin runs), unlike add_post_type_support().
+ */
+add_filter('register_post_type_args', function ($args, $post_type) {
+    $targets = ['service', 'portfolio', 'success_story', 'location'];
+    if (!in_array($post_type, $targets, true)) {
+        return $args;
+    }
+    $supports = isset($args['supports']) ? $args['supports'] : ['title', 'editor'];
+    if (!is_array($supports)) {
+        return $args; // supports explicitly disabled - leave as-is
+    }
+    if (!in_array('custom-fields', $supports, true)) {
+        $supports[] = 'custom-fields';
+    }
+    $args['supports'] = $supports;
+    return $args;
+}, 10, 2);
+
 add_action('init', function () {
     $post_types = ['page', 'post', 'service', 'portfolio', 'success_story', 'location'];
     $meta_keys  = ['_yoast_wpseo_title', '_yoast_wpseo_metadesc', '_yoast_wpseo_focuskw'];
-
-    foreach ($post_types as $post_type) {
-        // The custom CPTs aren't registered with 'custom-fields' support, so the
-        // core REST controller omits the `meta` field entirely. Add it so the
-        // registered Yoast meta below is readable/writable via wp/v2.
-        add_post_type_support($post_type, 'custom-fields');
-    }
 
     foreach ($post_types as $post_type) {
         foreach ($meta_keys as $meta_key) {
