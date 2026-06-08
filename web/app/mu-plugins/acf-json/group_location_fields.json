@@ -1,7 +1,7 @@
 {
     "key": "group_location_fields",
     "title": "Location Fields",
-    "modified": 1780497342,
+    "modified": 1780921303,
     "fields": [
         {
             "key": "field_location_service_slug",
@@ -441,5 +441,5 @@
     "hide_on_screen": "",
     "active": true,
     "description": "Fields for Location (Local SEO) pages - service, state, city, suburb, coordinates, and flexible content blocks",
-    "show_in_rest": 0
+    "show_in_rest": 1
 }
