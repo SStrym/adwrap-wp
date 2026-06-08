@@ -20,6 +20,13 @@ add_action('init', function () {
     $meta_keys  = ['_yoast_wpseo_title', '_yoast_wpseo_metadesc', '_yoast_wpseo_focuskw'];
 
     foreach ($post_types as $post_type) {
+        // The custom CPTs aren't registered with 'custom-fields' support, so the
+        // core REST controller omits the `meta` field entirely. Add it so the
+        // registered Yoast meta below is readable/writable via wp/v2.
+        add_post_type_support($post_type, 'custom-fields');
+    }
+
+    foreach ($post_types as $post_type) {
         foreach ($meta_keys as $meta_key) {
             register_post_meta($post_type, $meta_key, [
                 'type'          => 'string',
