@@ -63,6 +63,13 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 # Copy application files
 COPY . .
 
+# Re-run composer after the full context lands. WordPress core (web/wp) is no
+# longer committed, so the image must get it from roots/wordpress here; this
+# also self-heals a stale/incomplete cached composer layer (seen 2026-07-13
+# when web/wp was silently missing from the cached install step).
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
+    && test -f web/wp/wp-load.php
+
 # Create necessary directories
 RUN mkdir -p /var/log/supervisor \
     && mkdir -p /run/nginx \

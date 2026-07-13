@@ -1,0 +1,19 @@
+# Keep the `railway up` upload context identical to the GitHub snapshot:
+# no secrets, no local junk, no WordPress core (composer installs web/wp).
+.git
+web/wp
+web/app/uploads
+.env
+.env.*
+keys
+*.pem
+*.key
+*.sql
+*.sql.gz
+node_modules
+vendor
+.lando.env
+.lando.yml
+*.log
+.idea
+.vscode
