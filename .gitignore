@@ -8,8 +8,9 @@ web/app/uploads/*
 !web/app/uploads/.gitkeep
 # web/app/cache/*
 
-# # WordPress
-# web/wp
+# WordPress core — installed by composer (roots/wordpress → web/wp), never committed.
+# Keeping it out of git halves the Railway build snapshot (~68 MB, ~3.5k files).
+web/wp
 # web/.htaccess
 
 # Logs
