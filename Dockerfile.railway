@@ -54,6 +54,11 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
 # Set working directory
 WORKDIR /var/www/html
 
+# Composer runs as root during the image build; without this flag it silently
+# DISABLES all plugins (composer/installers, roots/wordpress-core-installer)
+# in non-interactive mode — and WordPress core never lands in web/wp.
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Copy composer files first for better caching
 COPY composer.json composer.lock ./
 
@@ -63,11 +68,11 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 # Copy application files
 COPY . .
 
-# Re-run composer after the full context lands. WordPress core (web/wp) is no
-# longer committed, so the image must get it from roots/wordpress here; this
-# also self-heals a stale/incomplete cached composer layer (seen 2026-07-13
-# when web/wp was silently missing from the cached install step).
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
+# WordPress core (web/wp) is not committed — it must come from composer above.
+# Self-heal if a cached install layer lacked it, then fail the build loudly if
+# core still isn't there (a coreless image must never reach production).
+RUN test -f web/wp/wp-load.php \
+    || composer reinstall roots/wordpress-no-content --no-interaction \
     && test -f web/wp/wp-load.php
 
 # Create necessary directories
