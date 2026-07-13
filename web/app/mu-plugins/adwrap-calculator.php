@@ -48,7 +48,7 @@ final class AdwrapCalculatorConfig
                 'model_year_label'   => 'Model year',
                 'no_results'         => 'No vehicles found',
                 'tiers_title'        => 'Vinyl tier',
-                'levels_title'       => 'Wrap level',
+                'levels_title'       => 'Wrap coverage',
                 'designs_title'      => 'Design',
                 'addons_title'       => 'Add-on services',
                 'fleet_title'        => 'Fleet size',
@@ -72,8 +72,8 @@ final class AdwrapCalculatorConfig
 
             'tiers' => [
                 [
-                    'id'             => 'color-change',
-                    'name'           => 'Color change',
+                    'id'             => 'standard-cast',
+                    'name'           => 'Standard Cast',
                     'price_per_sqft' => 8.25,
                     'description'    => 'Cast color change film. 3M 2080 / Avery SW900',
                     'catalog_ids'    => ['3m-2080', 'avery-sw900'],
@@ -83,13 +83,6 @@ final class AdwrapCalculatorConfig
                     'name'           => 'Premium Cast',
                     'price_per_sqft' => 9.75,
                     'description'    => 'Standard wrap. full coverage, max durability',
-                    'catalog_ids'    => [],
-                ],
-                [
-                    'id'             => 'reflective',
-                    'name'           => 'Reflective',
-                    'price_per_sqft' => 24.00,
-                    'description'    => 'DOT-grade reflective. night visibility, compliance',
                     'catalog_ids'    => [],
                 ],
             ],
@@ -122,9 +115,7 @@ final class AdwrapCalculatorConfig
             ],
 
             'addons' => [
-                ['id' => 'window-tint',    'name' => 'Window tint',           'description' => 'Full vehicle. UV block + privacy',   'price' => 350, 'from' => 0],
-                ['id' => 'ceramic',        'name' => 'Ceramic coating',       'description' => 'Gloss seal & protection over wrap',  'price' => 800, 'from' => 0],
-                ['id' => 'wrap-removal',   'name' => 'Existing wrap removal', 'description' => 'Safe removal of current graphics',   'price' => 800, 'from' => 1],
+                ['id' => 'wrap-removal', 'name' => 'Existing wrap removal', 'description' => 'Safe removal of current graphics', 'price' => 800, 'from' => 1],
             ],
 
             'fleet' => [

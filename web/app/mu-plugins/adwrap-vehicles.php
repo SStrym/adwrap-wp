@@ -13,6 +13,7 @@ final class AdwrapVehicles
     private const SCHEMA_VERSION = '2';
     private const SCHEMA_OPTION  = 'adwrap_vehicles_schema_version';
     private const PRICING_OPTION = 'adwrap_wrap_pricing';
+    private const YEARS_OPTION   = 'adwrap_vehicles_years_current';
 
     private const NONCE_IMPORT = 'adwrap_vehicles_import';
     private const NONCE_EDIT   = 'adwrap_vehicles_edit';
@@ -30,6 +31,7 @@ final class AdwrapVehicles
     public function __construct()
     {
         add_action('init', [$this, 'maybe_create_table']);
+        add_action('init', [$this, 'maybe_extend_years'], 20);
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'handle_admin_post']);
         add_action('rest_api_init', [$this, 'register_rest_routes']);
@@ -81,6 +83,75 @@ final class AdwrapVehicles
         dbDelta($sql);
 
         update_option(self::SCHEMA_OPTION, self::SCHEMA_VERSION);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Year ranges                                                         */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Once a year (guarded by an option) re-extend the catalog so every
+     * model's newest year range runs up to the current year — e.g. a vehicle
+     * listed "2015-2019" displays and stores "2015-2026". Older, superseded
+     * ranges of the same model (a "1989-1993" next to a "2000-…" row) are
+     * left as-is.
+     */
+    public function maybe_extend_years(): void
+    {
+        $year = (int) current_time('Y');
+        if ((int) get_option(self::YEARS_OPTION) === $year) {
+            return;
+        }
+        $this->extend_latest_year_ranges();
+        update_option(self::YEARS_OPTION, $year);
+    }
+
+    /**
+     * Bump the latest year range of every make+model to the current year.
+     * Returns the number of rows updated.
+     */
+    public function extend_latest_year_ranges(): int
+    {
+        global $wpdb;
+        $table = $this->table();
+        $year  = (int) current_time('Y');
+
+        $rows = $wpdb->get_results(
+            "SELECT id, make, model, year_from, year_to FROM {$table} WHERE year_to IS NOT NULL",
+            ARRAY_A
+        );
+        if (!$rows) {
+            return 0;
+        }
+
+        // Latest year_to per make+model.
+        $latest = [];
+        foreach ($rows as $r) {
+            $key = $r['make'] . '|' . $r['model'];
+            $to  = (int) $r['year_to'];
+            if (!isset($latest[$key]) || $to > $latest[$key]) {
+                $latest[$key] = $to;
+            }
+        }
+
+        $updated = 0;
+        $now     = current_time('mysql');
+        foreach ($rows as $r) {
+            $key = $r['make'] . '|' . $r['model'];
+            $to  = (int) $r['year_to'];
+            if ($to !== $latest[$key] || $to >= $year) {
+                continue; // not the newest range, or already current
+            }
+            $from = $r['year_from'] !== null ? (int) $r['year_from'] : null;
+            $wpdb->update($table, [
+                'year_to'    => $year,
+                'year_raw'   => $this->build_year_label($from, $year),
+                'updated_at' => $now,
+            ], ['id' => (int) $r['id']]);
+            $updated++;
+        }
+
+        return $updated;
     }
 
     /* ------------------------------------------------------------------ */
@@ -533,11 +604,11 @@ final class AdwrapVehicles
                     <tr>
                         <th>Options</th>
                         <td>
-                            <label><input type="checkbox" name="extend_2021" value="1" checked>
-                                Extend year ranges ending in 2021 up to <strong>2026</strong></label><br>
                             <label><input type="checkbox" name="replace_all" value="1">
                                 Replace the entire catalog (delete existing rows first)</label>
                             <p class="description">Without "replace", rows are matched on make + model + year and updated in place; new combinations are inserted.</p>
+                            <p class="description">After import, each model's <strong>newest</strong> year range is automatically extended to the current year
+                                (e.g. <code>2015-2019</code> becomes <code>2015-<?php echo (int) current_time('Y'); ?></code>). This also re-runs once a year automatically.</p>
                         </td>
                     </tr>
                 </table>
@@ -559,7 +630,6 @@ final class AdwrapVehicles
             exit;
         }
 
-        $extend  = !empty($_POST['extend_2021']);
         $replace = !empty($_POST['replace_all']);
 
         $fh = fopen($_FILES['csv']['tmp_name'], 'r');
@@ -604,9 +674,6 @@ final class AdwrapVehicles
             }
 
             [$from, $to] = $this->parse_year_range($yrraw);
-            if ($extend && $to === 2021) {
-                $to = 2026;
-            }
             $year_label = $this->build_year_label($from, $to);
 
             $data = [
@@ -642,12 +709,15 @@ final class AdwrapVehicles
         }
         fclose($fh);
 
+        $extended = $this->extend_latest_year_ranges();
+
         $this->notify_next_revalidate();
         $this->set_notice('success', sprintf(
-            'Import complete. Created %d, updated %d.%s',
+            'Import complete. Created %d, updated %d. Newest year ranges extended to %d on %d vehicles.',
             $created,
             $updated,
-            $extend ? ' Year ranges ending 2021 were extended to 2026.' : ''
+            (int) current_time('Y'),
+            $extended
         ));
         wp_safe_redirect(admin_url('admin.php?page=adwrap-vehicles-import'));
         exit;
