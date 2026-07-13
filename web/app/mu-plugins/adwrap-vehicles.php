@@ -10,7 +10,7 @@
 final class AdwrapVehicles
 {
     /** Bump this when the table schema changes to trigger a re-create via dbDelta. */
-    private const SCHEMA_VERSION = '1';
+    private const SCHEMA_VERSION = '2';
     private const SCHEMA_OPTION  = 'adwrap_vehicles_schema_version';
     private const PRICING_OPTION = 'adwrap_wrap_pricing';
 
@@ -64,6 +64,7 @@ final class AdwrapVehicles
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             make VARCHAR(100) NOT NULL DEFAULT '',
             model VARCHAR(191) NOT NULL DEFAULT '',
+            category VARCHAR(100) NOT NULL DEFAULT '',
             year_raw VARCHAR(20) NOT NULL DEFAULT '',
             year_from SMALLINT UNSIGNED NULL,
             year_to SMALLINT UNSIGNED NULL,
@@ -72,6 +73,7 @@ final class AdwrapVehicles
             PRIMARY KEY  (id),
             KEY make (make),
             KEY model (model(50)),
+            KEY category (category),
             KEY years (year_from, year_to)
         ) {$charset};";
 
@@ -152,6 +154,9 @@ final class AdwrapVehicles
             case 'save_pricing':
                 $this->handle_save_pricing();
                 break;
+            case 'bulk_category':
+                $this->handle_bulk_category();
+                break;
         }
     }
 
@@ -178,6 +183,7 @@ final class AdwrapVehicles
         // List screen
         $search   = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
         $make     = isset($_GET['make']) ? sanitize_text_field(wp_unslash($_GET['make'])) : '';
+        $category = isset($_GET['category']) ? sanitize_text_field(wp_unslash($_GET['category'])) : '';
         $per_page = 50;
         $paged    = max(1, isset($_GET['paged']) ? (int) $_GET['paged'] : 1);
         $offset   = ($paged - 1) * $per_page;
@@ -195,6 +201,14 @@ final class AdwrapVehicles
             $where   .= ' AND make = %s';
             $params[] = $make;
         }
+        if ($category !== '') {
+            if ($category === '__none__') {
+                $where .= " AND category = ''";
+            } else {
+                $where   .= ' AND category = %s';
+                $params[] = $category;
+            }
+        }
 
         $count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";
         $total     = (int) ($params
@@ -205,7 +219,8 @@ final class AdwrapVehicles
         $list_params = array_merge($params, [$per_page, $offset]);
         $rows        = $wpdb->get_results($wpdb->prepare($list_sql, $list_params), ARRAY_A);
 
-        $makes = $wpdb->get_col("SELECT DISTINCT make FROM {$table} WHERE make <> '' ORDER BY make ASC");
+        $makes      = $wpdb->get_col("SELECT DISTINCT make FROM {$table} WHERE make <> '' ORDER BY make ASC");
+        $categories = $this->categories();
         $notice = $this->take_notice();
         $base   = admin_url('admin.php?page=adwrap-vehicles');
         ?>
@@ -226,26 +241,51 @@ final class AdwrapVehicles
                         <option value="<?php echo esc_attr($m); ?>" <?php selected($make, $m); ?>><?php echo esc_html($m); ?></option>
                     <?php endforeach; ?>
                 </select>
+                <select name="category">
+                    <option value="">All categories</option>
+                    <option value="__none__" <?php selected($category, '__none__'); ?>>— No category —</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?php echo esc_attr($cat); ?>" <?php selected($category, $cat); ?>><?php echo esc_html($cat); ?></option>
+                    <?php endforeach; ?>
+                </select>
                 <input type="search" name="s" value="<?php echo esc_attr($search); ?>" placeholder="Search make / model / year">
                 <button class="button">Filter</button>
                 <span style="margin-left:8px;color:#666;"><?php echo number_format($total); ?> vehicles</span>
             </form>
 
+            <form method="post" style="margin:12px 0;padding:10px 12px;background:#fff;border:1px solid #c3c4c7;display:inline-block;">
+                <?php wp_nonce_field(self::NONCE_EDIT); ?>
+                <input type="hidden" name="adwrap_action" value="bulk_category">
+                <input type="hidden" name="s" value="<?php echo esc_attr($search); ?>">
+                <input type="hidden" name="make" value="<?php echo esc_attr($make); ?>">
+                <input type="hidden" name="category" value="<?php echo esc_attr($category); ?>">
+                <strong>Bulk:</strong> set category
+                <input name="new_category" list="adwrap-cat-list" placeholder="e.g. Cargo vans" style="width:180px">
+                <datalist id="adwrap-cat-list">
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?php echo esc_attr($cat); ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+                for all <strong><?php echo number_format($total); ?></strong> vehicles matching the current filter
+                <button class="button" onclick="return confirm('Set the category for all <?php echo (int) $total; ?> filtered vehicles?');">Apply</button>
+            </form>
+
             <table class="widefat striped">
                 <thead>
                     <tr>
-                        <th>Make</th><th>Model</th><th>Year</th>
+                        <th>Make</th><th>Model</th><th>Category</th><th>Year</th>
                         <th>Side&nbsp;ft²</th><th>Back&nbsp;ft²</th><th>Hood&nbsp;ft²</th><th>Roof&nbsp;ft²</th>
                         <th>Total&nbsp;ft²</th><th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!$rows): ?>
-                        <tr><td colspan="9">No vehicles found.</td></tr>
+                        <tr><td colspan="10">No vehicles found.</td></tr>
                     <?php else: foreach ($rows as $r): ?>
                         <tr>
                             <td><strong><?php echo esc_html($r['make']); ?></strong></td>
                             <td><?php echo esc_html($r['model']); ?></td>
+                            <td><?php echo $r['category'] !== '' ? esc_html($r['category']) : '<span style="color:#b32d2e;">—</span>'; ?></td>
                             <td><?php echo esc_html($r['year_raw']); ?></td>
                             <td><?php echo esc_html($r['side_sqft']); ?></td>
                             <td><?php echo esc_html($r['back_sqft']); ?></td>
@@ -261,7 +301,7 @@ final class AdwrapVehicles
             <?php
             $total_pages = (int) ceil($total / $per_page);
             if ($total_pages > 1) {
-                $current_args = array_filter(['page' => 'adwrap-vehicles', 's' => $search, 'make' => $make]);
+                $current_args = array_filter(['page' => 'adwrap-vehicles', 's' => $search, 'make' => $make, 'category' => $category]);
                 echo '<div class="tablenav"><div class="tablenav-pages">';
                 echo paginate_links([
                     'base'      => add_query_arg(array_merge($current_args, ['paged' => '%#%']), admin_url('admin.php')),
@@ -296,6 +336,17 @@ final class AdwrapVehicles
                 <table class="form-table">
                     <tr><th><label>Make</label></th><td><input name="make" class="regular-text" value="<?php echo $val('make'); ?>" required></td></tr>
                     <tr><th><label>Model</label></th><td><input name="model" class="regular-text" value="<?php echo $val('model'); ?>"></td></tr>
+                    <tr><th><label>Category</label></th>
+                        <td>
+                            <input name="category" class="regular-text" list="adwrap-cat-list-edit" value="<?php echo $val('category'); ?>" placeholder="e.g. Cargo vans">
+                            <datalist id="adwrap-cat-list-edit">
+                                <?php foreach ($this->categories() as $cat): ?>
+                                    <option value="<?php echo esc_attr($cat); ?>"></option>
+                                <?php endforeach; ?>
+                            </datalist>
+                            <p class="description">Body type shown as a filter chip and badge in the public calculator (Cargo vans, Box trucks, Pickup…).</p>
+                        </td>
+                    </tr>
                     <tr><th><label>Year (range)</label></th>
                         <td>
                             <input name="year_from" type="number" min="1900" max="2100" style="width:90px" value="<?php echo $val('year_from'); ?>" placeholder="from">
@@ -363,6 +414,7 @@ final class AdwrapVehicles
         $data = [
             'make'      => sanitize_text_field(wp_unslash($_POST['make'] ?? '')),
             'model'     => sanitize_text_field(wp_unslash($_POST['model'] ?? '')),
+            'category'  => sanitize_text_field(wp_unslash($_POST['category'] ?? '')),
             'year_from' => $this->int_or_null($_POST['year_from'] ?? ''),
             'year_to'   => $this->int_or_null($_POST['year_to'] ?? ''),
         ];
@@ -398,6 +450,55 @@ final class AdwrapVehicles
         exit;
     }
 
+    /** Set the category on every vehicle matching the current list filter. */
+    private function handle_bulk_category(): void
+    {
+        check_admin_referer(self::NONCE_EDIT);
+        global $wpdb;
+        $table = $this->table();
+
+        $new      = sanitize_text_field(wp_unslash($_POST['new_category'] ?? ''));
+        $search   = sanitize_text_field(wp_unslash($_POST['s'] ?? ''));
+        $make     = sanitize_text_field(wp_unslash($_POST['make'] ?? ''));
+        $category = sanitize_text_field(wp_unslash($_POST['category'] ?? ''));
+
+        $where  = '1=1';
+        $params = [];
+        if ($search !== '') {
+            $like     = '%' . $wpdb->esc_like($search) . '%';
+            $where   .= ' AND (make LIKE %s OR model LIKE %s OR year_raw LIKE %s)';
+            array_push($params, $like, $like, $like);
+        }
+        if ($make !== '') {
+            $where   .= ' AND make = %s';
+            $params[] = $make;
+        }
+        if ($category === '__none__') {
+            $where .= " AND category = ''";
+        } elseif ($category !== '') {
+            $where   .= ' AND category = %s';
+            $params[] = $category;
+        }
+
+        $sql    = "UPDATE {$table} SET category = %s, updated_at = %s WHERE {$where}";
+        $params = array_merge([$new, current_time('mysql')], $params);
+        $count  = $wpdb->query($wpdb->prepare($sql, $params));
+
+        $this->notify_next_revalidate();
+        $this->set_notice('success', sprintf('Category "%s" set on %d vehicles.', $new !== '' ? $new : '—', (int) $count));
+
+        $back = array_filter(['page' => 'adwrap-vehicles', 's' => $search, 'make' => $make, 'category' => $category]);
+        wp_safe_redirect(add_query_arg($back, admin_url('admin.php')));
+        exit;
+    }
+
+    /** Distinct non-empty categories, alphabetical. */
+    private function categories(): array
+    {
+        global $wpdb;
+        return $wpdb->get_col("SELECT DISTINCT category FROM {$this->table()} WHERE category <> '' ORDER BY category ASC") ?: [];
+    }
+
     /* ------------------------------------------------------------------ */
     /* Admin: CSV import                                                   */
     /* ------------------------------------------------------------------ */
@@ -418,6 +519,7 @@ final class AdwrapVehicles
             <p>Upload a CSV with the header row:
                 <code>make,model,year,side_width,side_height,side_sqft,back_width,back_height,back_sqft,hood_width,hood_length,hood_sqft,roof_width,roof_length,roof_sqft,total_sqft</code>.
                 <br>The <code>year</code> column accepts a range like <code>2014-2021</code> or a single year <code>2021</code>.
+                <br>An optional <code>category</code> column sets the body type (Cargo vans, Box trucks, …); when absent, existing categories are kept.
             </p>
 
             <form method="post" enctype="multipart/form-data">
@@ -515,6 +617,11 @@ final class AdwrapVehicles
                 'year_to'   => $to,
                 'updated_at' => $now,
             ];
+            // Only touch the category when the CSV actually has the column, so
+            // re-imports of the plain PVO sheet don't wipe curated categories.
+            if (array_key_exists('category', $idx)) {
+                $data['category'] = sanitize_text_field($get('category'));
+            }
             foreach (self::MEASURE_COLS as $col) {
                 $data[$col] = $this->float_or_null($get($col));
             }
@@ -673,17 +780,19 @@ final class AdwrapVehicles
         global $wpdb;
         $table = $this->table();
 
-        $make   = sanitize_text_field((string) $req->get_param('make'));
-        $model  = sanitize_text_field((string) $req->get_param('model'));
-        $search = sanitize_text_field((string) $req->get_param('search'));
+        $make     = sanitize_text_field((string) $req->get_param('make'));
+        $model    = sanitize_text_field((string) $req->get_param('model'));
+        $category = sanitize_text_field((string) $req->get_param('category'));
+        $search   = sanitize_text_field((string) $req->get_param('search'));
         $per    = min(2000, max(1, (int) ($req->get_param('per_page') ?: 50)));
         $page   = max(1, (int) ($req->get_param('page') ?: 1));
         $offset = ($page - 1) * $per;
 
         $where  = '1=1';
         $params = [];
-        if ($make !== '')  { $where .= ' AND make = %s';  $params[] = $make; }
-        if ($model !== '') { $where .= ' AND model = %s'; $params[] = $model; }
+        if ($make !== '')     { $where .= ' AND make = %s';     $params[] = $make; }
+        if ($model !== '')    { $where .= ' AND model = %s';    $params[] = $model; }
+        if ($category !== '') { $where .= ' AND category = %s'; $params[] = $category; }
         if ($search !== '') {
             $like = '%' . $wpdb->esc_like($search) . '%';
             $where .= ' AND (make LIKE %s OR model LIKE %s)';
@@ -720,6 +829,7 @@ final class AdwrapVehicles
             'id'        => (int) $r['id'],
             'make'      => $r['make'],
             'model'     => $r['model'],
+            'category'  => (string) ($r['category'] ?? ''),
             'year'      => $r['year_raw'],
             'year_from' => $r['year_from'] !== null ? (int) $r['year_from'] : null,
             'year_to'   => $r['year_to'] !== null ? (int) $r['year_to'] : null,
