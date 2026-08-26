@@ -32,6 +32,9 @@ final class AdwrapCalculatorConfig
             'currency'  => '$',
             'phone'     => '(847) 637-0009',
             'min_price' => 0,
+            // 0 = show an estimate RANGE and gate the exact figure behind the
+            // quote form (lead capture); 1 = show the exact total (old behavior).
+            'show_exact_price' => 0,
 
             'copy' => [
                 'eyebrow'            => 'WRAP CALCULATOR',
@@ -63,7 +66,9 @@ final class AdwrapCalculatorConfig
                 'design_label'       => 'Design',
                 'addons_label'       => 'Add-on Services',
                 'total_label'        => 'Estimated price',
+                'range_label'        => 'Estimated range',
                 'submit_label'       => 'SUBMIT THIS QUOTE',
+                'gated_submit_label' => 'GET EXACT QUOTE + FREE MOCKUP',
                 'call_label'         => 'CALL {phone}',
                 'promo_text'         => 'Want a real quote in 2 hours backed by a 2-year warranty?',
                 'promo_button'       => 'GET FLEET PRICING →',
@@ -138,7 +143,7 @@ final class AdwrapCalculatorConfig
         }
 
         $config = $defaults;
-        foreach (['currency', 'phone', 'min_price'] as $k) {
+        foreach (['currency', 'phone', 'min_price', 'show_exact_price'] as $k) {
             if (isset($saved[$k])) {
                 $config[$k] = $saved[$k];
             }
@@ -186,6 +191,7 @@ final class AdwrapCalculatorConfig
             'currency'  => sanitize_text_field(wp_unslash($_POST['currency'] ?? '$')) ?: '$',
             'phone'     => sanitize_text_field(wp_unslash($_POST['phone'] ?? '')),
             'min_price' => max(0, (float) ($_POST['min_price'] ?? 0)),
+            'show_exact_price' => empty($_POST['show_exact_price']) ? 0 : 1,
             'copy'      => [],
             'tiers'     => [],
             'catalogs'  => [],
@@ -327,6 +333,10 @@ final class AdwrapCalculatorConfig
                     <tr><th><label>Minimum estimate</label></th>
                         <td><input name="min_price" type="number" step="1" min="0" value="<?php echo $text($c['min_price']); ?>" style="width:120px">
                             <p class="description">The estimate never goes below this amount. 0 = no minimum.</p></td></tr>
+                    <tr><th><label>Show exact price</label></th>
+                        <td><label><input type="checkbox" name="show_exact_price" value="1" <?php checked(!empty($c['show_exact_price'])); ?>>
+                            Show the exact total on the page</label>
+                            <p class="description">Unchecked (default): visitors see an estimated <em>range</em> and get the exact figure + free mockup through the quote form (lead capture). Checked: the old behavior — exact total and full breakdown on the page.</p></td></tr>
                 </table>
 
                 <h2 class="title">Vinyl tiers</h2>
@@ -478,7 +488,9 @@ final class AdwrapCalculatorConfig
                         'design_label'       => 'Design line label',
                         'addons_label'       => 'Add-ons line label',
                         'total_label'        => 'Total line label',
+                        'range_label'        => 'Range line label (gated mode)',
                         'submit_label'       => 'Submit button',
+                        'gated_submit_label' => 'Submit button (gated mode)',
                         'call_label'         => 'Call button',
                         'promo_text'         => 'Promo box text',
                         'promo_button'       => 'Promo box button',
