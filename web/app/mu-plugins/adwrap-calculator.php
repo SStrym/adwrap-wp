@@ -578,6 +578,7 @@ final class AdwrapCalculatorConfig
             'currency'  => (string) $c['currency'],
             'phone'     => (string) $c['phone'],
             'min_price' => (float) $c['min_price'],
+            'show_exact_price' => !empty($c['show_exact_price']),
             'copy'      => array_map('strval', $c['copy']),
             'tiers'     => array_map(fn($t) => [
                 'id'             => (string) $t['id'],
